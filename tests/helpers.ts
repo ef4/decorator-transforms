@@ -8,16 +8,15 @@ import ourDecorators from "../src/index.ts";
 
 function builder(plugins: TransformOptions["plugins"]) {
   return function build(src: string, scope: Record<string, any>) {
-    let fn = eval(
-      transform(
-        `
-     (function(${Object.keys(scope).join(",")}) { 
-      return (${src})
-     })
-    `,
-        { plugins }
-      )!.code!
-    );
+    let transformedSrc = transform(
+      `
+   (function(${Object.keys(scope).join(",")}) { 
+    return (${src})
+   })
+  `,
+      { plugins }
+    )!.code!;
+    let fn = eval(transformedSrc);
     return fn(...Object.values(scope));
   };
 }
