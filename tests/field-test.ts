@@ -92,47 +92,47 @@ function compatTests(title: string, build: Builder) {
       assert.strictEqual(example.thing, 1);
       assert.deepEqual(log, [`a thing`, `b thing`]);
     });
-  });
 
-  test("value-returning decorator", (assert) => {
-    let double: LegacyDecorator = function (_target, _prop, desc) {
-      return {
-        initializer: () => (desc.initializer ? desc.initializer() * 2 : 0),
+    test("value-returning decorator", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: () => (desc.initializer ? desc.initializer() * 2 : 0),
+        };
       };
-    };
 
-    let Example = build(
-      `
+      let Example = build(
+        `
       class Example {
         @double thing = 3;
       }
       `,
-      { double, ...runtime }
-    );
-    assert.strictEqual(new Example().thing, 6);
-  });
+        { double, ...runtime }
+      );
+      assert.strictEqual(new Example().thing, 6);
+    });
 
-  test("initializes value-returning decorator per instance", (assert) => {
-    let noop: LegacyDecorator = function (_target, _prop, desc) {
-      return desc;
-    };
+    test("initializes value-returning decorator per instance", (assert) => {
+      let noop: LegacyDecorator = function (_target, _prop, desc) {
+        return desc;
+      };
 
-    let counter = 3;
-    let Example = build(
-      `
+      let counter = 3;
+      let Example = build(
+        `
       class Example {
         @noop thing = counter++;
         @noop other = counter++;
       }
       `,
-      { noop, counter, ...runtime }
-    );
-    let a = new Example();
-    let b = new Example();
-    assert.strictEqual(a.thing, 3);
-    assert.strictEqual(a.other, 4);
-    assert.strictEqual(b.thing, 5);
-    assert.strictEqual(b.other, 6);
+        { noop, counter, ...runtime }
+      );
+      let a = new Example();
+      let b = new Example();
+      assert.strictEqual(a.thing, 3);
+      assert.strictEqual(a.other, 4);
+      assert.strictEqual(b.thing, 5);
+      assert.strictEqual(b.other, 6);
+    });
   });
 }
 

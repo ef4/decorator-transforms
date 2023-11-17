@@ -54,7 +54,7 @@ export default function legacyDecoratorCompat(
           path.insertBefore(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(t.identifier("applyDecorator"), args)
+                t.callExpression(t.identifier("decorateField"), args)
               ),
             ])
           );
@@ -75,6 +75,32 @@ export default function legacyDecoratorCompat(
             )
           );
           path.remove();
+        }
+      },
+      ClassMethod(path: NodePath<t.ClassMethod>) {
+        let decorators = path.get("decorators") as
+          | NodePath<t.Decorator>[]
+          | NodePath<undefined>;
+        if (Array.isArray(decorators)) {
+          path.insertAfter(
+            t.staticBlock([
+              t.expressionStatement(
+                t.callExpression(t.identifier("decorateMethod"), [
+                  t.identifier("this"),
+                  t.stringLiteral(propName(path.node.key)),
+                  t.arrayExpression(
+                    decorators
+                      .slice()
+                      .reverse()
+                      .map((d) => d.node.expression)
+                  ),
+                ])
+              ),
+            ])
+          );
+          for (let decorator of decorators) {
+            decorator.remove();
+          }
         }
       },
     },

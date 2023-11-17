@@ -5,6 +5,7 @@ export interface Descriptor {
   get?(): any;
   set?(v: any): void;
   initializer?: () => any;
+  value?: any;
 }
 export type LegacyDecorator = (
   target: object,
@@ -37,7 +38,7 @@ function findDeferredDecorator(
   }
 }
 
-export function applyDecorator(
+export function decorateField(
   target: { prototype: object },
   prop: string,
   decorators: LegacyDecorator[],
@@ -59,6 +60,26 @@ export function applyDecorator(
   } else {
     deferDecorator(target.prototype, prop, desc);
   }
+}
+
+export function decorateMethod(
+  { prototype }: { prototype: object },
+  prop: string,
+  decorators: LegacyDecorator[]
+): void {
+  const origDesc = Object.getOwnPropertyDescriptor(prototype, prop);
+  if (!origDesc) {
+    throw new Error(`bug: decorateMethod didn't find method descriptor`);
+  }
+  let desc: Descriptor = { ...origDesc };
+  for (let decorator of decorators) {
+    desc = decorator(prototype, prop, desc) || desc;
+  }
+  if (desc.initializer !== undefined) {
+    desc.value = desc.initializer ? desc.initializer.call(prototype) : void 0;
+    desc.initializer = undefined;
+  }
+  Object.defineProperty(prototype, prop, desc);
 }
 
 export function initDecorator(target: object, prop: string): void {
