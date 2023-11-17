@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "dist/index.mjs",
+  "exports": {
+    ".": "./dist/index.js",
+    "./runtime": "./dist/runtime.js"
+  },
   "scripts": {
     "start": "tsup --watch",
     "build": "tsup",

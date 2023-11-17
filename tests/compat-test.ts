@@ -1,5 +1,6 @@
 import { module, test } from "qunit";
-import { oldBuild, newBuild, Builder, LegacyDecorator } from "./helpers.ts";
+import { oldBuild, newBuild, Builder } from "./helpers.ts";
+import { applyDecorator, type LegacyDecorator } from "../src/runtime.ts";
 
 function compatTests(title: string, build: Builder) {
   module(title, () => {
@@ -30,7 +31,7 @@ function compatTests(title: string, build: Builder) {
           @tracked thing = 1;
         }
         `,
-        { tracked }
+        { tracked, applyDecorator }
       );
       let example = new Example();
       assert.strictEqual(example.thing, 1);

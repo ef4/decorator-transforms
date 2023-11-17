@@ -6,6 +6,7 @@ import decoratorSyntax from "@babel/plugin-syntax-decorators";
 export default function legacyDecoratorCompat(
   babel: typeof Babel
 ): Babel.PluginObj {
+  const t = babel.types;
   return {
     inherits: (api: unknown, _options: unknown, dirname: unknown) =>
       decoratorSyntax(api, { legacy: true }, dirname),
@@ -15,11 +16,37 @@ export default function legacyDecoratorCompat(
           | NodePath<t.Decorator>[]
           | null;
         if (decorators) {
-          for (let decorator of decorators) {
-            decorator.remove();
+          let args: t.Expression[] = [
+            t.identifier("this"),
+            t.stringLiteral(propName(path.node.key)),
+            t.arrayExpression(decorators.map((d) => d.node.expression)),
+          ];
+          if (path.node.value) {
+            args.push(
+              t.functionExpression(
+                null,
+                [],
+                t.blockStatement([t.returnStatement(path.node.value)])
+              )
+            );
           }
+          path.insertBefore(
+            t.staticBlock([
+              t.expressionStatement(
+                t.callExpression(t.identifier("applyDecorator"), args)
+              ),
+            ])
+          );
+          path.remove();
         }
       },
     },
   };
+}
+
+function propName(expr: t.Expression): string {
+  if (expr.type === "Identifier") {
+    return expr.name;
+  }
+  throw new Error(`unexpected decorator property name ${expr.type}`);
 }

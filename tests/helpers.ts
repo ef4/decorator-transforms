@@ -30,17 +30,3 @@ export const oldBuild = builder([
 ]);
 
 export const newBuild = builder([ourDecorators]);
-
-export interface Descriptor {
-  configurable?: boolean;
-  enumerable?: boolean;
-  writable?: boolean;
-  get?(): any;
-  set?(v: any): void;
-  initializer?: () => any;
-}
-export type LegacyDecorator = (
-  target: object,
-  prop: string,
-  desc: Descriptor
-) => Descriptor | null;
