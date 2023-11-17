@@ -1,6 +1,6 @@
 {
-  "name": "legacy-decorator-compat",
-  "version": "1.0.0",
+  "name": "decorator-transforms",
+  "version": "0.0.0",
   "description": "",
   "type": "module",
   "exports": {
