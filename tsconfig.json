@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["es2022", "dom"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "target": "es6",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "noEmit": true
+  }
+}
