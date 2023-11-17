@@ -19,7 +19,12 @@ export default function legacyDecoratorCompat(
           let args: t.Expression[] = [
             t.identifier("this"),
             t.stringLiteral(propName(path.node.key)),
-            t.arrayExpression(decorators.map((d) => d.node.expression)),
+            t.arrayExpression(
+              decorators
+                .slice()
+                .reverse()
+                .map((d) => d.node.expression)
+            ),
           ];
           if (path.node.value) {
             args.push(

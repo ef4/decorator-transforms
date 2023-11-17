@@ -39,6 +39,43 @@ function compatTests(title: string, build: Builder) {
       assert.strictEqual(example.thing, 2);
       assert.deepEqual(log, [2]);
     });
+
+    test("multiple decorator order", (assert) => {
+      let log: any[] = [];
+
+      function logAccess(message: string): LegacyDecorator {
+        return function (_target, prop, desc) {
+          let { initializer } = desc;
+          let value: any;
+          return {
+            get() {
+              log.push(`${message} ${prop}`);
+              if (desc.get) {
+                return desc.get();
+              } else {
+                if (initializer) {
+                  value = initializer();
+                  initializer = undefined;
+                }
+                return value;
+              }
+            },
+          };
+        };
+      }
+
+      let Example = build(
+        `
+        class Example {
+          @logAccess('a') @logAccess('b') thing = 1;
+        }
+        `,
+        { logAccess, applyDecorator }
+      );
+      let example = new Example();
+      assert.strictEqual(example.thing, 1);
+      assert.deepEqual(log, [`a thing`, `b thing`]);
+    });
   });
 }
 
