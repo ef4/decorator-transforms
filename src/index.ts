@@ -1,7 +1,8 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
-// @ts-expect-error no upstream types
-import decoratorSyntax from "@babel/plugin-syntax-decorators";
+import { createRequire } from "node:module";
+const req = createRequire(import.meta.url);
+const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
@@ -29,8 +30,8 @@ export default function legacyDecoratorCompat(
       ClassProperty(path: NodePath<t.ClassProperty>, state: State) {
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
-          | null;
-        if (decorators) {
+          | NodePath<undefined>;
+        if (Array.isArray(decorators)) {
           let args: t.Expression[] = [
             t.identifier("this"),
             t.stringLiteral(propName(path.node.key)),

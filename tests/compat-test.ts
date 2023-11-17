@@ -41,6 +41,21 @@ function compatTests(title: string, build: Builder) {
       assert.deepEqual(log, [2]);
     });
 
+    test("noop on undecorated class fields", (assert) => {
+      let Example = build(
+        `
+        class Example {
+          thing = 1;
+        }
+        `,
+        {}
+      );
+      let example = new Example();
+      assert.strictEqual(example.thing, 1);
+      example.thing = 2;
+      assert.strictEqual(example.thing, 2);
+    });
+
     test("multiple decorator order", (assert) => {
       let log: any[] = [];
 

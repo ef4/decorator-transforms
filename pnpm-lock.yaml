@@ -25,6 +25,9 @@ devDependencies:
   '@types/babel__core':
     specifier: ^7.20.4
     version: 7.20.4
+  '@types/node':
+    specifier: ^20.9.1
+    version: 20.9.1
   '@types/qunit':
     specifier: ^2.19.8
     version: 2.19.8
@@ -839,6 +842,12 @@ packages:
       '@babel/types': 7.23.3
     dev: true
 
+  /@types/node@20.9.1:
+    resolution: {integrity: sha512-HhmzZh5LSJNS5O8jQKpJ/3ZcrrlG6L70hpGqMIAoM9YVD0YBRNWYsfwcXq8VnSjlNpCpgLzMXdiPo+dxcvSmiA==}
+    dependencies:
+      undici-types: 5.26.5
+    dev: true
+
   /@types/qunit@2.19.8:
     resolution: {integrity: sha512-L4JyeRG1CJGSzJKd1b78DX/ll91E8e50IXkkl8KzW6W0IWz6FTHWEYvTEi8QVNHkUqUu6hjTffwV7ffxcoka0g==}
     dev: true
@@ -1585,6 +1594,10 @@ packages:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
+    dev: true
+
+  /undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
 
   /update-browserslist-db@1.0.13(browserslist@4.22.1):
