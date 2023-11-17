@@ -1,19 +1,5 @@
 import { module, test } from "qunit";
-import { legacyBuild, Builder } from "./helpers.ts";
-
-interface Descriptor {
-  configurable?: boolean;
-  enumerable?: boolean;
-  writable?: boolean;
-  get?(): any;
-  set?(v: any): void;
-  initializer?: () => any;
-}
-type LegacyDecorator = (
-  target: object,
-  prop: string,
-  desc: Descriptor
-) => Descriptor | null;
+import { legacyBuild, Builder, LegacyDecorator } from "./helpers.ts";
 
 function compatTests(title: string, build: Builder) {
   module(title, () => {
@@ -40,10 +26,10 @@ function compatTests(title: string, build: Builder) {
 
       let Example = build(
         `
-    class Example {
-      @tracked thing = 1;
-    }
-    `,
+        class Example {
+          @tracked thing = 1;
+        }
+        `,
         { tracked }
       );
       let example = new Example();
