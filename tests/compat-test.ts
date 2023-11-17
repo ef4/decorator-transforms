@@ -1,9 +1,9 @@
 import { module, test } from "qunit";
-import { legacyBuild, Builder, LegacyDecorator } from "./helpers.ts";
+import { oldBuild, newBuild, Builder, LegacyDecorator } from "./helpers.ts";
 
 function compatTests(title: string, build: Builder) {
   module(title, () => {
-    test("smoke", (assert) => {
+    test("prototype descriptor", (assert) => {
       let log: any[] = [];
 
       let tracked: LegacyDecorator = function (_target, _prop, desc) {
@@ -41,4 +41,5 @@ function compatTests(title: string, build: Builder) {
   });
 }
 
-compatTests("@babel/plugin-proposal-decorators", legacyBuild);
+compatTests("old-build", oldBuild);
+compatTests("new-build", newBuild);

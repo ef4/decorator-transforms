@@ -4,6 +4,8 @@ import legacyDecorators from "@babel/plugin-proposal-decorators";
 // @ts-expect-error no upstream types
 import classProperties from "@babel/plugin-transform-class-properties";
 
+import ourDecorators from "../src/index.ts";
+
 function builder(plugins: TransformOptions["plugins"]) {
   return function build(src: string, scope: Record<string, any>) {
     let fn = eval(
@@ -22,10 +24,12 @@ function builder(plugins: TransformOptions["plugins"]) {
 
 export type Builder = (src: string, scope: Record<string, any>) => any;
 
-export const legacyBuild = builder([
+export const oldBuild = builder([
   [legacyDecorators, { legacy: true }],
   classProperties,
 ]);
+
+export const newBuild = builder([ourDecorators]);
 
 export interface Descriptor {
   configurable?: boolean;

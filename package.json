@@ -23,5 +23,8 @@
     "qunit": "^2.20.0",
     "tsup": "^7.3.0",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@babel/plugin-syntax-decorators": "^7.23.3"
   }
 }
