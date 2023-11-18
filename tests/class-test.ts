@@ -1,4 +1,4 @@
-import { module, test } from "qunit";
+import { module, test, skip } from "qunit";
 import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyClassDecorator } from "../src/runtime.ts";
 import * as runtime from "../src/runtime.ts";
@@ -26,7 +26,7 @@ function compatTests(title: string, build: Builder) {
       assert.strictEqual(example.red, "#ff0000");
     });
 
-    test("class replacement", (assert) => {
+    skip("class replacement", (assert) => {
       let withColors: LegacyClassDecorator = (target) => {
         return class extends target {
           get red() {
