@@ -15,7 +15,7 @@ function compatTests(title: string, build: Builder) {
           get() {
             if (!initialized) {
               initialized = true;
-              value = desc.initializer?.();
+              value = desc.initializer?.call(this);
             }
             return value;
           },
@@ -96,7 +96,9 @@ function compatTests(title: string, build: Builder) {
     test("value-returning decorator", (assert) => {
       let double: LegacyDecorator = function (_target, _prop, desc) {
         return {
-          initializer: () => (desc.initializer ? desc.initializer() * 2 : 0),
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
         };
       };
 
@@ -109,6 +111,47 @@ function compatTests(title: string, build: Builder) {
         { double, ...runtime }
       );
       assert.strictEqual(new Example().thing, 6);
+    });
+
+    test("initializer this-context", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let tracked: LegacyDecorator = function (_target, _prop, desc) {
+        let value: any;
+        let initialized = false;
+        return {
+          get() {
+            if (!initialized) {
+              initialized = true;
+              value = desc.initializer?.call(this);
+            }
+            return value;
+          },
+          set(newValue: any) {
+            value = newValue;
+          },
+        };
+      };
+
+      let Example = build(
+        `
+      class Example {
+        first = 1;
+        @tracked second = this.first + 1;
+        @double third = this.second + 1;
+      }
+      `,
+        { double, tracked, ...runtime }
+      );
+      assert.strictEqual(new Example().first, 1);
+      assert.strictEqual(new Example().second, 2);
+      assert.strictEqual(new Example().third, 6);
     });
 
     test("initializes value-returning decorator per instance", (assert) => {
