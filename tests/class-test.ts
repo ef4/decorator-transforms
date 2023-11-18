@@ -143,6 +143,56 @@ function classTests(title: string, build: Builder) {
       assert.strictEqual(checkLocalName(), Example);
       assert.strictEqual(new Example().red, "#ff0000");
     });
+
+    test("standalone class declaration mutation", async (assert) => {
+      let red: LegacyClassDecorator = (target) => {
+        Object.defineProperty((target as any).prototype, "red", {
+          get() {
+            return "#ff0000";
+          },
+        });
+      };
+
+      let { Example } = await build.module(
+        `
+          import red from "red";
+
+          @red 
+          class Example {
+          }
+
+          export { Example }
+        `,
+        { "decorator-transforms/runtime": runtime, red: { default: red } }
+      );
+
+      assert.strictEqual(new Example().red, "#ff0000");
+    });
+
+    skip("standalone class declaration replacement", async (assert) => {
+      let red: LegacyClassDecorator = (target) => {
+        return class extends target {
+          get red() {
+            return "#ff0000";
+          }
+        };
+      };
+
+      let { Example } = await build.module(
+        `
+          import red from "red";
+
+          @red 
+          class Example {
+          }
+
+          export { Example }
+        `,
+        { "decorator-transforms/runtime": runtime, red: { default: red } }
+      );
+
+      assert.strictEqual(new Example().red, "#ff0000");
+    });
   });
 }
 
