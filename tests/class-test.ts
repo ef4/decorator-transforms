@@ -27,7 +27,7 @@ function compatTests(title: string, build: Builder) {
     });
 
     test("class replacement", (assert) => {
-      let withColors: LegacyClassDecorator = (target: any) => {
+      let withColors: LegacyClassDecorator = (target) => {
         return class extends target {
           get red() {
             return "#ff0000";
