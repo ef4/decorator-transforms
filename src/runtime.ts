@@ -105,6 +105,9 @@ export function initDecorator(target: object, prop: string): void {
 export function decorateClass(
   target: new (...args: any) => any,
   decorators: LegacyClassDecorator[]
-): void {
-  decorators.reduce((accum, decorator) => decorator(accum) || accum, target);
+): new (...args: any) => any {
+  return decorators.reduce(
+    (accum, decorator) => decorator(accum) || accum,
+    target
+  );
 }

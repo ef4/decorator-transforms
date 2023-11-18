@@ -48,29 +48,81 @@ export default function legacyDecoratorCompat(
           state.currentClassBodies.pop();
         },
       },
-      Class(path, state) {
+      ClassExpression(path, state) {
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
-        if (Array.isArray(decorators)) {
-          path.get("body").pushContainer(
-            "body",
-            t.staticBlock([
-              t.expressionStatement(
-                t.callExpression(state.runtime(path, "decorateClass"), [
-                  t.identifier("this"),
-                  t.arrayExpression(
-                    decorators
-                      .slice()
-                      .reverse()
-                      .map((d) => d.node.expression)
-                  ),
-                ])
+        if (Array.isArray(decorators) && decorators.length > 0) {
+          let call = t.expressionStatement(
+            t.callExpression(state.runtime(path, "decorateClass"), [
+              path.node,
+              t.arrayExpression(
+                decorators
+                  .slice()
+                  .reverse()
+                  .map((d) => d.node.expression)
               ),
             ])
           );
           for (let decorator of decorators) {
             decorator.remove();
+          }
+          path.replaceWith(call);
+        }
+      },
+      ClassDeclaration(path, state) {
+        let decorators = path.get("decorators") as
+          | NodePath<t.Decorator>[]
+          | NodePath<undefined>;
+        if (Array.isArray(decorators) && decorators.length > 0) {
+          let call = t.callExpression(state.runtime(path, "decorateClass"), [
+            t.classExpression(
+              path.node.id,
+              path.node.superClass,
+              path.node.body,
+              [] // decorators removed here
+            ),
+            t.arrayExpression(
+              decorators
+                .slice()
+                .reverse()
+                .map((d) => d.node.expression)
+            ),
+          ]);
+
+          if (path.parentPath.isExportDefaultDeclaration()) {
+            let id = path.node.id;
+            if (id) {
+              path.parentPath.insertBefore(
+                t.variableDeclaration("const", [t.variableDeclarator(id, call)])
+              );
+              path.parentPath.replaceWith(t.exportDefaultDeclaration(id));
+            } else {
+              path.parentPath.replaceWith(t.exportDefaultDeclaration(call));
+            }
+          } else if (path.parentPath.isExportNamedDeclaration()) {
+            let id = path.node.id;
+            if (!id) {
+              throw new Error(
+                `bug: expected a class name is required in this context`
+              );
+            }
+            path.parentPath.insertBefore(
+              t.variableDeclaration("const", [t.variableDeclarator(id, call)])
+            );
+            path.parentPath.replaceWith(
+              t.exportNamedDeclaration(null, [t.exportSpecifier(id, id)])
+            );
+          } else {
+            let id = path.node.id;
+            if (!id) {
+              throw new Error(
+                `bug: expected a class name is required in this context`
+              );
+            }
+            path.replaceWith(
+              t.variableDeclaration("const", [t.variableDeclarator(id, call)])
+            );
           }
         }
       },
@@ -78,7 +130,7 @@ export default function legacyDecoratorCompat(
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
-        if (Array.isArray(decorators)) {
+        if (Array.isArray(decorators) && decorators.length > 0) {
           let args: t.Expression[] = [
             t.identifier("this"),
             t.stringLiteral(propName(path.node.key)),
@@ -128,7 +180,7 @@ export default function legacyDecoratorCompat(
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
-        if (Array.isArray(decorators)) {
+        if (Array.isArray(decorators) && decorators.length > 0) {
           path.insertAfter(
             t.staticBlock([
               t.expressionStatement(

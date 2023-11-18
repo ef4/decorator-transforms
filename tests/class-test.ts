@@ -1,4 +1,4 @@
-import { module, test, skip } from "qunit";
+import { module, test } from "qunit";
 import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyClassDecorator } from "../src/runtime.ts";
 import * as runtime from "../src/runtime.ts";
@@ -26,7 +26,7 @@ function classTests(title: string, build: Builder) {
       assert.strictEqual(example.red, "#ff0000");
     });
 
-    skip("class expression replacement", (assert) => {
+    test("class expression replacement", (assert) => {
       let withColors: LegacyClassDecorator = (target) => {
         return class extends target {
           get red() {
@@ -85,8 +85,8 @@ function classTests(title: string, build: Builder) {
 
       let { default: Example, checkLocalName } = await build.module(
         `
-        import red from "red";
-        debugger;
+      import red from "red";
+
       export default @red class X {
       }
       export function checkLocalName() {
@@ -110,8 +110,8 @@ function classTests(title: string, build: Builder) {
 
       let { default: Example } = await build.module(
         `
-        import red from "red";
-        debugger;
+      import red from "red";
+
       export default @red class {
       }
       `,
@@ -169,7 +169,7 @@ function classTests(title: string, build: Builder) {
       assert.strictEqual(new Example().red, "#ff0000");
     });
 
-    skip("standalone class declaration replacement", async (assert) => {
+    test("standalone class declaration replacement", async (assert) => {
       let red: LegacyClassDecorator = (target) => {
         return class extends target {
           get red() {

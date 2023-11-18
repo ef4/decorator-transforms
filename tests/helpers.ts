@@ -7,7 +7,9 @@ import classProperties from "@babel/plugin-transform-class-properties";
 import * as vm from "node:vm";
 import ourDecorators, { Options } from "../src/index.ts";
 
-if (!vm.SourceTextModule) {
+try {
+  new vm.SourceTextModule(`export {}`);
+} catch (err) {
   throw new Error(
     `this test suite require the node flag "--experimental-vm-modules" in order to evaluate dynamically transpiled ES modules`
   );
@@ -35,8 +37,12 @@ function builder(
       plugins: modulePlugins ?? exprPlugins,
     })!.code!;
     let context = vm.createContext({ deps });
-
-    let m = new vm.SourceTextModule(transformedSrc, { context });
+    let m: vm.SourceTextModule;
+    try {
+      m = new vm.SourceTextModule(transformedSrc, { context });
+    } catch (err) {
+      throw new Error(`unable to compile module:\n${transformedSrc}`);
+    }
     await m.link(async function linker(specifier) {
       let dep = deps[specifier];
       if (!dep) {
