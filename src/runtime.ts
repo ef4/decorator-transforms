@@ -11,7 +11,7 @@ export type LegacyDecorator = (
   target: object,
   prop: string,
   desc: Descriptor
-) => Descriptor | null;
+) => Descriptor | null | undefined | void;
 
 const deferred = new WeakMap();
 
@@ -92,4 +92,14 @@ export function initDecorator(target: object, prop: string): void {
       value: desc.initializer ? desc.initializer.call(target) : undefined,
     });
   }
+}
+
+export function decorateClass(
+  target: object,
+  decorators: LegacyDecorator[]
+): void {
+  decorators.reduce(
+    (accum, decorator) => (decorator as any)(accum) || accum,
+    target
+  );
 }

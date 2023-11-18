@@ -27,6 +27,32 @@ export default function legacyDecoratorCompat(
           state.currentClassBodies.pop();
         },
       },
+      Class(path: NodePath<t.ClassDeclaration | t.ClassExpression>) {
+        let decorators = path.get("decorators") as
+          | NodePath<t.Decorator>[]
+          | NodePath<undefined>;
+        if (Array.isArray(decorators)) {
+          path.get("body").pushContainer(
+            "body",
+            t.staticBlock([
+              t.expressionStatement(
+                t.callExpression(t.identifier("decorateClass"), [
+                  t.identifier("this"),
+                  t.arrayExpression(
+                    decorators
+                      .slice()
+                      .reverse()
+                      .map((d) => d.node.expression)
+                  ),
+                ])
+              ),
+            ])
+          );
+          for (let decorator of decorators) {
+            decorator.remove();
+          }
+        }
+      },
       ClassProperty(path: NodePath<t.ClassProperty>, state: State) {
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
