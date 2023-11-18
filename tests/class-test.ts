@@ -3,9 +3,9 @@ import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyClassDecorator } from "../src/runtime.ts";
 import * as runtime from "../src/runtime.ts";
 
-function compatTests(title: string, build: Builder) {
+function classTests(title: string, build: Builder) {
   module(`${title}-Class`, () => {
-    test("class mutation", (assert) => {
+    test("class expression mutation", (assert) => {
       let withColors: LegacyClassDecorator = (target) => {
         Object.defineProperty((target as any).prototype, "red", {
           get() {
@@ -14,7 +14,7 @@ function compatTests(title: string, build: Builder) {
         });
       };
 
-      let Example = build(
+      let Example = build.expression(
         `
         @withColors
         class Example {
@@ -26,7 +26,7 @@ function compatTests(title: string, build: Builder) {
       assert.strictEqual(example.red, "#ff0000");
     });
 
-    skip("class replacement", (assert) => {
+    skip("class expression replacement", (assert) => {
       let withColors: LegacyClassDecorator = (target) => {
         return class extends target {
           get red() {
@@ -35,7 +35,7 @@ function compatTests(title: string, build: Builder) {
         };
       };
 
-      let Example = build(
+      let Example = build.expression(
         `
         @withColors
         class Example {
@@ -59,7 +59,7 @@ function compatTests(title: string, build: Builder) {
         };
       }
 
-      let Example = build(
+      let Example = build.expression(
         `
         @addColor("red", "#ff0000")
         @addColor("blue", "#0000ff")
@@ -73,8 +73,78 @@ function compatTests(title: string, build: Builder) {
       assert.strictEqual(example.blue, "#0000ff");
       assert.deepEqual(log, ["added blue", "added red"]);
     });
+
+    test("export default class declaration with name", async (assert) => {
+      let red: LegacyClassDecorator = (target) => {
+        Object.defineProperty((target as any).prototype, "red", {
+          get() {
+            return "#ff0000";
+          },
+        });
+      };
+
+      let { default: Example, checkLocalName } = await build.module(
+        `
+        import red from "red";
+        debugger;
+      export default @red class X {
+      }
+      export function checkLocalName() {
+        return X;
+      }
+      `,
+        { "decorator-transforms/runtime": runtime, red: { default: red } }
+      );
+      assert.strictEqual(checkLocalName(), Example);
+      assert.strictEqual(new Example().red, "#ff0000");
+    });
+
+    test("export default class declaration without name", async (assert) => {
+      let red: LegacyClassDecorator = (target) => {
+        Object.defineProperty((target as any).prototype, "red", {
+          get() {
+            return "#ff0000";
+          },
+        });
+      };
+
+      let { default: Example } = await build.module(
+        `
+        import red from "red";
+        debugger;
+      export default @red class {
+      }
+      `,
+        { "decorator-transforms/runtime": runtime, red: { default: red } }
+      );
+      assert.strictEqual(new Example().red, "#ff0000");
+    });
+
+    test("export named class declaration", async (assert) => {
+      let red: LegacyClassDecorator = (target) => {
+        Object.defineProperty((target as any).prototype, "red", {
+          get() {
+            return "#ff0000";
+          },
+        });
+      };
+
+      let { Example, checkLocalName } = await build.module(
+        `
+          import red from "red";
+          @red export class Example {
+          }
+          export function checkLocalName() {
+            return Example;
+          }
+        `,
+        { "decorator-transforms/runtime": runtime, red: { default: red } }
+      );
+      assert.strictEqual(checkLocalName(), Example);
+      assert.strictEqual(new Example().red, "#ff0000");
+    });
   });
 }
 
-compatTests("old-build", oldBuild);
-compatTests("new-build", newBuild);
+classTests("old-build", oldBuild);
+classTests("new-build", newBuild);

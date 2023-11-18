@@ -24,7 +24,7 @@
     "start": "tsup --watch",
     "build": "tsup",
     "lint": "tsc",
-    "test": "qunit --require @swc-node/register tests/*-test.ts",
+    "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
     "typecheck": "tsc"
   },
   "keywords": [],
@@ -43,6 +43,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@babel/plugin-syntax-decorators": "^7.23.3"
+    "@babel/plugin-syntax-decorators": "^7.23.3",
+    "babel-import-util": "^2.0.1"
   }
 }

@@ -3,7 +3,7 @@ import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyDecorator } from "../src/runtime.ts";
 import * as runtime from "../src/runtime.ts";
 
-function compatTests(title: string, build: Builder) {
+function fieldTests(title: string, build: Builder) {
   module(`${title}-ClassField`, () => {
     test("getter returning decorator", (assert) => {
       let log: any[] = [];
@@ -26,7 +26,7 @@ function compatTests(title: string, build: Builder) {
         };
       };
 
-      let Example = build(
+      let Example = build.expression(
         `
         class Example {
           @tracked thing = 1;
@@ -42,7 +42,7 @@ function compatTests(title: string, build: Builder) {
     });
 
     test("noop on undecorated class fields", (assert) => {
-      let Example = build(
+      let Example = build.expression(
         `
         class Example {
           thing = 1;
@@ -80,7 +80,7 @@ function compatTests(title: string, build: Builder) {
         };
       }
 
-      let Example = build(
+      let Example = build.expression(
         `
         class Example {
           @logAccess('a') @logAccess('b') thing = 1;
@@ -102,7 +102,7 @@ function compatTests(title: string, build: Builder) {
         };
       };
 
-      let Example = build(
+      let Example = build.expression(
         `
       class Example {
         @double thing = 3;
@@ -139,7 +139,7 @@ function compatTests(title: string, build: Builder) {
         };
       };
 
-      let Example = build(
+      let Example = build.expression(
         `
       class Example {
         first = 1;
@@ -160,7 +160,7 @@ function compatTests(title: string, build: Builder) {
       };
 
       let counter = 3;
-      let Example = build(
+      let Example = build.expression(
         `
       class Example {
         @noop thing = counter++;
@@ -179,5 +179,5 @@ function compatTests(title: string, build: Builder) {
   });
 }
 
-compatTests("old-build", oldBuild);
-compatTests("new-build", newBuild);
+fieldTests("old-build", oldBuild);
+fieldTests("new-build", newBuild);

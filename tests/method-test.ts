@@ -3,10 +3,10 @@ import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyDecorator } from "../src/runtime.ts";
 import * as runtime from "../src/runtime.ts";
 
-function compatTests(title: string, build: Builder) {
+function methodTests(title: string, build: Builder) {
   module(`${title}-ClassMethod`, () => {
     test("noop on undecorated class method", (assert) => {
-      let Example = build(
+      let Example = build.expression(
         `
         class Example {
           doIt(){ return 1 };
@@ -34,7 +34,7 @@ function compatTests(title: string, build: Builder) {
         };
       };
 
-      let Example = build(
+      let Example = build.expression(
         `
         class Example {
           @intercept
@@ -50,5 +50,5 @@ function compatTests(title: string, build: Builder) {
   });
 }
 
-compatTests("old-build", oldBuild);
-compatTests("new-build", newBuild);
+methodTests("old-build", oldBuild);
+methodTests("new-build", newBuild);

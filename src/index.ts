@@ -1,11 +1,19 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
 import { createRequire } from "node:module";
+import { ImportUtil } from "babel-import-util";
 const req = createRequire(import.meta.url);
 const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
+  opts: Options;
+  runtime: (target: NodePath<t.Node>, fnName: string) => t.Identifier;
+  optsWithDefaults: Required<Options>;
+}
+
+export interface Options {
+  runtime?: "globals" | { import: string };
 }
 
 export default function legacyDecoratorCompat(
@@ -16,18 +24,31 @@ export default function legacyDecoratorCompat(
     inherits: (api: unknown, _options: unknown, dirname: unknown) =>
       decoratorSyntax(api, { legacy: true }, dirname),
     visitor: {
-      Program(_path: NodePath<t.Program>, state: State) {
+      Program(path: NodePath<t.Program>, state: State) {
         state.currentClassBodies = [];
+        state.optsWithDefaults = {
+          runtime: "globals",
+          ...state.opts,
+        };
+        let importUtil = new ImportUtil(t, path);
+        state.runtime = (target: NodePath<t.Node>, fnName: string) => {
+          const { runtime } = state.optsWithDefaults;
+          if (runtime === "globals") {
+            return t.identifier(fnName);
+          } else {
+            return importUtil.import(target, runtime.import, fnName);
+          }
+        };
       },
       ClassBody: {
-        enter(path: NodePath<t.ClassBody>, state: State) {
+        enter(path, state) {
           state.currentClassBodies.unshift(path.node);
         },
-        exit(_path: NodePath<t.ClassBody>, state: State) {
+        exit(_path, state) {
           state.currentClassBodies.pop();
         },
       },
-      Class(path: NodePath<t.ClassDeclaration | t.ClassExpression>) {
+      Class(path, state) {
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
@@ -36,7 +57,7 @@ export default function legacyDecoratorCompat(
             "body",
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(t.identifier("decorateClass"), [
+                t.callExpression(state.runtime(path, "decorateClass"), [
                   t.identifier("this"),
                   t.arrayExpression(
                     decorators
@@ -53,7 +74,7 @@ export default function legacyDecoratorCompat(
           }
         }
       },
-      ClassProperty(path: NodePath<t.ClassProperty>, state: State) {
+      ClassProperty(path, state) {
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
@@ -80,7 +101,7 @@ export default function legacyDecoratorCompat(
           path.insertBefore(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(t.identifier("decorateField"), args)
+                t.callExpression(state.runtime(path, "decorateField"), args)
               ),
             ])
           );
@@ -92,7 +113,7 @@ export default function legacyDecoratorCompat(
                 )
               ),
               t.sequenceExpression([
-                t.callExpression(t.identifier("initDecorator"), [
+                t.callExpression(state.runtime(path, "initDecorator"), [
                   t.identifier("this"),
                   t.stringLiteral(propName(path.node.key)),
                 ]),
@@ -103,7 +124,7 @@ export default function legacyDecoratorCompat(
           path.remove();
         }
       },
-      ClassMethod(path: NodePath<t.ClassMethod>) {
+      ClassMethod(path, state) {
         let decorators = path.get("decorators") as
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
@@ -111,7 +132,7 @@ export default function legacyDecoratorCompat(
           path.insertAfter(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(t.identifier("decorateMethod"), [
+                t.callExpression(state.runtime(path, "decorateMethod"), [
                   t.identifier("this"),
                   t.stringLiteral(propName(path.node.key)),
                   t.arrayExpression(
