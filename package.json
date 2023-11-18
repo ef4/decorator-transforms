@@ -17,6 +17,9 @@
       "require": "./dist/globals.cjs"
     }
   },
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "start": "tsup --watch",
     "build": "tsup",
