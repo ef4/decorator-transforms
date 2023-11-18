@@ -23,6 +23,7 @@
   "scripts": {
     "start": "tsup --watch",
     "build": "tsup",
+    "lint": "tsc",
     "test": "qunit --require @swc-node/register tests/*-test.ts",
     "typecheck": "tsc"
   },
