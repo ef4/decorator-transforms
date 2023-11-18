@@ -1,7 +1,9 @@
 import { module, test } from "qunit";
 import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyClassDecorator } from "../src/runtime.ts";
-import * as runtime from "../src/runtime.ts";
+import * as runtimeImpl from "../src/runtime.ts";
+import { globalId } from "../src/global-id.ts";
+const runtime = { [globalId]: runtimeImpl };
 
 function classTests(title: string, build: Builder) {
   module(`${title}-Class`, () => {
@@ -93,7 +95,7 @@ function classTests(title: string, build: Builder) {
         return X;
       }
       `,
-        { "decorator-transforms/runtime": runtime, red: { default: red } }
+        { "decorator-transforms/runtime": runtimeImpl, red: { default: red } }
       );
       assert.strictEqual(checkLocalName(), Example);
       assert.strictEqual(new Example().red, "#ff0000");
@@ -115,7 +117,7 @@ function classTests(title: string, build: Builder) {
       export default @red class {
       }
       `,
-        { "decorator-transforms/runtime": runtime, red: { default: red } }
+        { "decorator-transforms/runtime": runtimeImpl, red: { default: red } }
       );
       assert.strictEqual(new Example().red, "#ff0000");
     });
@@ -138,7 +140,7 @@ function classTests(title: string, build: Builder) {
             return Example;
           }
         `,
-        { "decorator-transforms/runtime": runtime, red: { default: red } }
+        { "decorator-transforms/runtime": runtimeImpl, red: { default: red } }
       );
       assert.strictEqual(checkLocalName(), Example);
       assert.strictEqual(new Example().red, "#ff0000");
@@ -163,7 +165,7 @@ function classTests(title: string, build: Builder) {
 
           export { Example }
         `,
-        { "decorator-transforms/runtime": runtime, red: { default: red } }
+        { "decorator-transforms/runtime": runtimeImpl, red: { default: red } }
       );
 
       assert.strictEqual(new Example().red, "#ff0000");
@@ -188,7 +190,7 @@ function classTests(title: string, build: Builder) {
 
           export { Example }
         `,
-        { "decorator-transforms/runtime": runtime, red: { default: red } }
+        { "decorator-transforms/runtime": runtimeImpl, red: { default: red } }
       );
 
       assert.strictEqual(new Example().red, "#ff0000");

@@ -46,7 +46,8 @@ function findDeferredDecorator(
   }
 }
 
-export function decorateField(
+// decorateField
+export function f(
   target: { prototype: object },
   prop: string,
   decorators: LegacyDecorator[],
@@ -70,15 +71,13 @@ export function decorateField(
   }
 }
 
-export function decorateMethod(
+// decorateMethod
+export function m(
   { prototype }: { prototype: object },
   prop: string,
   decorators: LegacyDecorator[]
 ): void {
   const origDesc = Object.getOwnPropertyDescriptor(prototype, prop);
-  if (!origDesc) {
-    throw new Error(`bug: decorateMethod didn't find method descriptor`);
-  }
   let desc: Descriptor = { ...origDesc };
   for (let decorator of decorators) {
     desc = decorator(prototype, prop, desc) || desc;
@@ -90,7 +89,8 @@ export function decorateMethod(
   Object.defineProperty(prototype, prop, desc);
 }
 
-export function initDecorator(target: object, prop: string): void {
+// initializeDeferredDecorator
+export function i(target: object, prop: string): void {
   let desc = findDeferredDecorator(target.constructor, prop);
   if (desc) {
     Object.defineProperty(target, prop, {
@@ -102,7 +102,8 @@ export function initDecorator(target: object, prop: string): void {
   }
 }
 
-export function decorateClass(
+// decorateClass
+export function c(
   target: new (...args: any) => any,
   decorators: LegacyClassDecorator[]
 ): new (...args: any) => any {

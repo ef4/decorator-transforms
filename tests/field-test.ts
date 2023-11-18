@@ -1,7 +1,10 @@
 import { module, test } from "qunit";
 import { oldBuild, newBuild, Builder } from "./helpers.ts";
 import { type LegacyDecorator } from "../src/runtime.ts";
-import * as runtime from "../src/runtime.ts";
+import * as runtimeImpl from "../src/runtime.ts";
+import { globalId } from "../src/global-id.ts";
+
+const runtime = { [globalId]: runtimeImpl };
 
 function fieldTests(title: string, build: Builder) {
   module(`${title}-ClassField`, () => {

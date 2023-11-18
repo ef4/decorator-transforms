@@ -2,13 +2,14 @@ import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
 import { createRequire } from "node:module";
 import { ImportUtil } from "babel-import-util";
+import { globalId } from "./global-id.ts";
 const req = createRequire(import.meta.url);
 const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
   opts: Options;
-  runtime: (target: NodePath<t.Node>, fnName: string) => t.Identifier;
+  runtime: (target: NodePath<t.Node>, fnName: string) => t.Expression;
   optsWithDefaults: Required<Options>;
 }
 
@@ -34,7 +35,10 @@ export default function legacyDecoratorCompat(
         state.runtime = (target: NodePath<t.Node>, fnName: string) => {
           const { runtime } = state.optsWithDefaults;
           if (runtime === "globals") {
-            return t.identifier(fnName);
+            return t.memberExpression(
+              t.identifier(globalId),
+              t.identifier(fnName)
+            );
           } else {
             return importUtil.import(target, runtime.import, fnName);
           }
@@ -54,7 +58,7 @@ export default function legacyDecoratorCompat(
           | NodePath<undefined>;
         if (Array.isArray(decorators) && decorators.length > 0) {
           let call = t.expressionStatement(
-            t.callExpression(state.runtime(path, "decorateClass"), [
+            t.callExpression(state.runtime(path, "c"), [
               path.node,
               t.arrayExpression(
                 decorators
@@ -75,7 +79,7 @@ export default function legacyDecoratorCompat(
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
         if (Array.isArray(decorators) && decorators.length > 0) {
-          let call = t.callExpression(state.runtime(path, "decorateClass"), [
+          let call = t.callExpression(state.runtime(path, "c"), [
             t.classExpression(
               path.node.id,
               path.node.superClass,
@@ -153,7 +157,7 @@ export default function legacyDecoratorCompat(
           path.insertBefore(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(state.runtime(path, "decorateField"), args)
+                t.callExpression(state.runtime(path, "f"), args)
               ),
             ])
           );
@@ -165,7 +169,7 @@ export default function legacyDecoratorCompat(
                 )
               ),
               t.sequenceExpression([
-                t.callExpression(state.runtime(path, "initDecorator"), [
+                t.callExpression(state.runtime(path, "i"), [
                   t.identifier("this"),
                   t.stringLiteral(propName(path.node.key)),
                 ]),
@@ -184,7 +188,7 @@ export default function legacyDecoratorCompat(
           path.insertAfter(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(state.runtime(path, "decorateMethod"), [
+                t.callExpression(state.runtime(path, "m"), [
                   t.identifier("this"),
                   t.stringLiteral(propName(path.node.key)),
                   t.arrayExpression(
