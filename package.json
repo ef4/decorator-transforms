@@ -1,7 +1,7 @@
 {
   "name": "decorator-transforms",
-  "version": "0.1.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Better babel transforms for decorators",
   "type": "module",
   "exports": {
     ".": {
