@@ -157,6 +157,29 @@ function fieldTests(title: string, build: Builder) {
       assert.strictEqual(new Example().third, 6);
     });
 
+    test("initializer is defined on descriptor", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            assert.ok('initializer' in desc, 'initializer exists');
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let Example = build.expression(
+        `
+      class Example {
+        @double first;
+        @double second = 2
+      }
+      `,
+        { double, ...runtime }
+      );
+      assert.strictEqual(new Example().first, 0);
+      assert.strictEqual(new Example().second, 4);
+    });
+
     test("initializes value-returning decorator per instance", (assert) => {
       let noop: LegacyDecorator = function (_target, _prop, desc) {
         return desc;
