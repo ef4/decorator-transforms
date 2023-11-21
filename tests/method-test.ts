@@ -49,6 +49,86 @@ function methodTests(title: string, build: Builder) {
       assert.strictEqual(example.doIt("a"), 1);
       assert.deepEqual(log, ["a"]);
     });
+
+    test("getter", (assert) => {
+      let log: any[] = [];
+      let intercept: LegacyDecorator = (_target, _prop, desc) => {
+        const { get } = desc;
+        if (!get) {
+          throw new Error(`intercept only works on getters`);
+        }
+        return {
+          ...desc,
+          get: function () {
+            log.push("it ran");
+            return get.call(this);
+          },
+        };
+      };
+
+      let Example = build.expression(
+        `
+        class Example {
+          count = 1
+
+          @intercept
+          get value(){ return this.count };
+        }
+        `,
+        { intercept, ...runtime }
+      );
+      let example = new Example();
+      assert.strictEqual(example.value, 1);
+      assert.deepEqual(log, ["it ran"]);
+    });
+
+    test("method with string literal name", (assert) => {
+      let noop: LegacyDecorator = (_target, _prop, desc) => desc;
+
+      let Example = build.expression(
+        `
+        class Example {
+          @noop
+          "doIt"(){ return 1 };
+        }
+        `,
+        { noop, ...runtime }
+      );
+      let example = new Example();
+      assert.strictEqual(example.doIt("a"), 1);
+    });
+
+    test("method with numeric literal name", (assert) => {
+      let noop: LegacyDecorator = (_target, _prop, desc) => desc;
+
+      let Example = build.expression(
+        `
+        class Example {
+          @noop
+          123(){ return 1 };
+        }
+        `,
+        { noop, ...runtime }
+      );
+      let example = new Example();
+      assert.strictEqual(example[123]("a"), 1);
+    });
+
+    test("method with bigint literal name", (assert) => {
+      let noop: LegacyDecorator = (_target, _prop, desc) => desc;
+
+      let Example = build.expression(
+        `
+        class Example {
+          @noop
+          123n(){ return 1 };
+        }
+        `,
+        { noop, ...runtime }
+      );
+      let example = new Example();
+      assert.strictEqual(example[123]("a"), 1);
+    });
   });
 }
 
