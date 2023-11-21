@@ -137,7 +137,7 @@ export default function legacyDecoratorCompat(
         if (Array.isArray(decorators) && decorators.length > 0) {
           let args: t.Expression[] = [
             t.identifier("this"),
-            t.stringLiteral(propName(path.node.key)),
+            valueForFieldKey(t, path.node.key),
             t.arrayExpression(
               decorators
                 .slice()
@@ -171,7 +171,7 @@ export default function legacyDecoratorCompat(
               t.sequenceExpression([
                 t.callExpression(state.runtime(path, "i"), [
                   t.identifier("this"),
-                  t.stringLiteral(propName(path.node.key)),
+                  valueForFieldKey(t, path.node.key),
                 ]),
                 t.identifier("void 0"),
               ])
@@ -190,7 +190,7 @@ export default function legacyDecoratorCompat(
               t.expressionStatement(
                 t.callExpression(state.runtime(path, "m"), [
                   t.identifier("this"),
-                  t.stringLiteral(propName(path.node.key)),
+                  valueForFieldKey(t, path.node.key),
                   t.arrayExpression(
                     decorators
                       .slice()
@@ -235,9 +235,28 @@ function unusedPrivateNameLike(state: State, name: string): string {
   return candidate;
 }
 
+// derive a best-effort name we can use when creating a private-field
 function propName(expr: t.Expression): string {
   if (expr.type === "Identifier") {
     return expr.name;
   }
-  throw new Error(`unexpected decorator property name ${expr.type}`);
+  if (expr.type === "BigIntLiteral" || expr.type === "NumericLiteral") {
+    return `_${expr.value}`;
+  }
+  if (expr.type === "StringLiteral") {
+    return "_" + expr.value.replace(/[^a-zA-Z]/g, "");
+  }
+  return "_";
+}
+
+// turn the field key into a runtime value. Identifiers are special because they
+// need to become string literals, anything else is already usable as a value.
+function valueForFieldKey(
+  t: (typeof Babel)["types"],
+  expr: t.Expression
+): t.Expression {
+  if (expr.type === "Identifier") {
+    return t.stringLiteral(expr.name);
+  }
+  return expr;
 }

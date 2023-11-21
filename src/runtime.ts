@@ -9,7 +9,7 @@ export interface Descriptor {
 }
 export type LegacyDecorator = (
   target: object,
-  prop: string,
+  prop: unknown,
   desc: Descriptor
 ) => Descriptor | null | undefined | void;
 
@@ -23,7 +23,11 @@ export type LegacyClassDecorator = (target: new (...args: any) => any) =>
 
 const deferred = new WeakMap();
 
-function deferDecorator(proto: object, prop: string, desc: Descriptor): void {
+function deferDecorator(
+  proto: object,
+  prop: string | number | symbol,
+  desc: Descriptor
+): void {
   let map = deferred.get(proto);
   if (!map) {
     map = new Map();
@@ -34,7 +38,7 @@ function deferDecorator(proto: object, prop: string, desc: Descriptor): void {
 
 function findDeferredDecorator(
   target: object,
-  prop: string
+  prop: string | number | symbol
 ): Descriptor | undefined {
   let cursor: object = (target as any).prototype;
   while (cursor) {
@@ -49,7 +53,7 @@ function findDeferredDecorator(
 // decorateField
 export function f(
   target: { prototype: object },
-  prop: string,
+  prop: string | number | symbol,
   decorators: LegacyDecorator[],
   initializer?: () => any
 ): void {
@@ -75,7 +79,7 @@ export function f(
 // decorateMethod
 export function m(
   { prototype }: { prototype: object },
-  prop: string,
+  prop: string | number | symbol,
   decorators: LegacyDecorator[]
 ): void {
   const origDesc = Object.getOwnPropertyDescriptor(prototype, prop);
@@ -91,7 +95,7 @@ export function m(
 }
 
 // initializeDeferredDecorator
-export function i(target: object, prop: string): void {
+export function i(target: object, prop: string | number | symbol): void {
   let desc = findDeferredDecorator(target.constructor, prop);
   if (desc) {
     Object.defineProperty(target, prop, {
