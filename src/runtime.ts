@@ -4,7 +4,7 @@ export interface Descriptor {
   writable?: boolean;
   get?(): any;
   set?(v: any): void;
-  initializer?: () => any;
+  initializer?: null | (() => any);
   value?: any;
 }
 export type LegacyDecorator = (
@@ -57,6 +57,7 @@ export function f(
     configurable: true,
     enumerable: true,
     writable: true,
+    initializer: null,
   };
   if (initializer) {
     desc.initializer = initializer;

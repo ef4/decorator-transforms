@@ -161,7 +161,7 @@ function fieldTests(title: string, build: Builder) {
       let double: LegacyDecorator = function (_target, _prop, desc) {
         return {
           initializer: function () {
-            assert.ok('initializer' in desc, 'initializer exists');
+            assert.ok("initializer" in desc, "initializer exists");
             return desc.initializer ? desc.initializer.call(this) * 2 : 0;
           },
         };
