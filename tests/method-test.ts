@@ -82,6 +82,37 @@ function methodTests(title: string, build: Builder) {
       assert.deepEqual(log, ["it ran"]);
     });
 
+    test("static getter", (assert) => {
+      let log: any[] = [];
+      let intercept: LegacyDecorator = (_target, _prop, desc) => {
+        const { get } = desc;
+        if (!get) {
+          throw new Error(`intercept only works on getters`);
+        }
+        return {
+          ...desc,
+          get: function () {
+            log.push("it ran");
+            return get.call(this);
+          },
+        };
+      };
+
+      let Example = build.expression(
+        `
+        class Example {
+          static count = 1
+
+          @intercept
+          static get value(){ return this.count };
+        }
+        `,
+        { intercept, ...runtime }
+      );
+      assert.strictEqual(Example.value, 1);
+      assert.deepEqual(log, ["it ran"]);
+    });
+
     test("method with string literal name", (assert) => {
       let noop: LegacyDecorator = (_target, _prop, desc) => desc;
 
