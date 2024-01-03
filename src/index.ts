@@ -135,8 +135,17 @@ export default function legacyDecoratorCompat(
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
         if (Array.isArray(decorators) && decorators.length > 0) {
+          let prototype: t.Expression;
+          if (path.node.static) {
+            prototype = t.identifier("this");
+          } else {
+            prototype = t.memberExpression(
+              t.identifier("this"),
+              t.identifier("prototype")
+            );
+          }
           let args: t.Expression[] = [
-            t.identifier("this"),
+            prototype,
             valueForFieldKey(t, path.node.key),
             t.arrayExpression(
               decorators
@@ -185,11 +194,20 @@ export default function legacyDecoratorCompat(
           | NodePath<t.Decorator>[]
           | NodePath<undefined>;
         if (Array.isArray(decorators) && decorators.length > 0) {
+          let prototype: t.Expression;
+          if (path.node.static) {
+            prototype = t.identifier("this");
+          } else {
+            prototype = t.memberExpression(
+              t.identifier("this"),
+              t.identifier("prototype")
+            );
+          }
           path.insertAfter(
             t.staticBlock([
               t.expressionStatement(
                 t.callExpression(state.runtime(path, "m"), [
-                  t.identifier("this"),
+                  prototype,
                   valueForFieldKey(t, path.node.key),
                   t.arrayExpression(
                     decorators

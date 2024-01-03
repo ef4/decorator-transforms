@@ -52,7 +52,7 @@ function findDeferredDecorator(
 
 // decorateField
 export function f(
-  target: { prototype: object },
+  prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[],
   initializer?: () => any
@@ -67,18 +67,18 @@ export function f(
     desc.initializer = initializer;
   }
   for (let decorator of decorators) {
-    desc = decorator(target.prototype, prop, desc) || desc;
+    desc = decorator(prototype, prop, desc) || desc;
   }
   if (desc.initializer === undefined) {
-    Object.defineProperty(target.prototype, prop, desc);
+    Object.defineProperty(prototype, prop, desc);
   } else {
-    deferDecorator(target.prototype, prop, desc);
+    deferDecorator(prototype, prop, desc);
   }
 }
 
 // decorateMethod
 export function m(
-  { prototype }: { prototype: object },
+  prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[]
 ): void {

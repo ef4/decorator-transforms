@@ -73,7 +73,7 @@ function fieldTests(title: string, build: Builder) {
                 return desc.get();
               } else {
                 if (initializer) {
-                  value = initializer();
+                  value = initializer.call(this);
                   initializer = undefined;
                 }
                 return value;
@@ -202,71 +202,110 @@ function fieldTests(title: string, build: Builder) {
       assert.strictEqual(b.thing, 5);
       assert.strictEqual(b.other, 6);
     });
-  });
 
-  test("field with string literal name", (assert) => {
-    let double: LegacyDecorator = function (_target, _prop, desc) {
-      return {
-        initializer: function () {
-          return desc.initializer ? desc.initializer.call(this) * 2 : 0;
-        },
+    test("static field", (assert) => {
+      let log: any[] = [];
+
+      function logAccess(message: string): LegacyDecorator {
+        return function (_target, prop, desc) {
+          let { initializer } = desc;
+          let value: any;
+          return {
+            get() {
+              log.push(`${message} ${prop}`);
+              if (desc.get) {
+                return desc.get();
+              } else {
+                if (initializer) {
+                  value = initializer.call(this);
+                  initializer = undefined;
+                }
+                return value;
+              }
+            },
+          };
+        };
+      }
+
+      let Example = build.expression(
+        `
+      class Example {
+        static first = 1;
+  
+        @logAccess('here')
+        static second = this.first * 2;
+      }
+      `,
+        { logAccess, ...runtime }
+      );
+
+      assert.equal(Example.second, 2, "should return value");
+      assert.deepEqual(log, [`here second`]);
+    });
+
+    test("field with string literal name", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
       };
-    };
 
-    let Example = build.expression(
-      `
+      let Example = build.expression(
+        `
     class Example {
       @double "the-thing" = 1
     }
     `,
-      { double, ...runtime }
-    );
-    let a = new Example();
-    assert.strictEqual(a["the-thing"], 2);
-  });
+        { double, ...runtime }
+      );
+      let a = new Example();
+      assert.strictEqual(a["the-thing"], 2);
+    });
 
-  test("field with numeric literal name", (assert) => {
-    let double: LegacyDecorator = function (_target, _prop, desc) {
-      return {
-        initializer: function () {
-          return desc.initializer ? desc.initializer.call(this) * 2 : 0;
-        },
+    test("field with numeric literal name", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
       };
-    };
 
-    let Example = build.expression(
-      `
+      let Example = build.expression(
+        `
     class Example {
       @double 1 = 1
     }
     `,
-      { double, ...runtime }
-    );
-    let a = new Example();
-    assert.strictEqual(a[1], 2);
-  });
+        { double, ...runtime }
+      );
+      let a = new Example();
+      assert.strictEqual(a[1], 2);
+    });
 
-  test("field with bigint literal name", (assert) => {
-    let double: LegacyDecorator = function (_target, _prop, desc) {
-      return {
-        initializer: function () {
-          return desc.initializer ? desc.initializer.call(this) * 2 : 0;
-        },
+    test("field with bigint literal name", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
       };
-    };
 
-    let Example = build.expression(
-      `
+      let Example = build.expression(
+        `
     class Example {
       @double 1n = 1
     }
     `,
-      { double, ...runtime }
-    );
-    let a = new Example();
-    assert.strictEqual(a[1], 2);
+        { double, ...runtime }
+      );
+      let a = new Example();
+      assert.strictEqual(a[1], 2);
+    });
   });
 }
-
 fieldTests("old-build", oldBuild);
 fieldTests("new-build", newBuild);
