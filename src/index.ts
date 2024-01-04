@@ -166,7 +166,7 @@ export default function legacyDecoratorCompat(
           path.insertBefore(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(state.runtime(path, "f"), args)
+                t.callExpression(state.runtime(path, "g"), args)
               ),
             ])
           );
@@ -206,7 +206,7 @@ export default function legacyDecoratorCompat(
           path.insertAfter(
             t.staticBlock([
               t.expressionStatement(
-                t.callExpression(state.runtime(path, "m"), [
+                t.callExpression(state.runtime(path, "n"), [
                   prototype,
                   valueForFieldKey(t, path.node.key),
                   t.arrayExpression(
