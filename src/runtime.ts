@@ -50,8 +50,18 @@ function findDeferredDecorator(
   }
 }
 
-// decorateField
+// decorateField v1
 export function f(
+  target: { prototype: object },
+  prop: string | number | symbol,
+  decorators: LegacyDecorator[],
+  initializer?: () => any
+): void {
+  return g(target.prototype, prop, decorators, initializer);
+}
+
+// decorateField v2
+export function g(
   prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[],
@@ -76,8 +86,17 @@ export function f(
   }
 }
 
-// decorateMethod
+// decorateMethod v1
 export function m(
+  { prototype }: { prototype: object },
+  prop: string | number | symbol,
+  decorators: LegacyDecorator[]
+): void {
+  return n(prototype, prop, decorators);
+}
+
+// decorateMethod v2
+export function n(
   prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[]
