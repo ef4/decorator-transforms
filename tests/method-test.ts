@@ -160,6 +160,30 @@ function methodTests(title: string, build: Builder) {
       let example = new Example();
       assert.strictEqual(example[123]("a"), 1);
     });
+
+    test("method on object literal", (assert) => {
+      let log: any[] = [];
+      let intercept: LegacyDecorator = (_target, _prop, desc) => {
+        let { value } = desc;
+        if (!value) {
+          throw new Error(`intercept only works on methods`);
+        }
+        return {
+          ...desc,
+          value: function (...args: any[]) {
+            log.push(args[0]);
+            return value(...args);
+          },
+        };
+      };
+
+      let example = build.expression(`{ @intercept value(){ return  1 } }`, {
+        intercept,
+        ...runtime,
+      });
+      assert.strictEqual(example.value("a"), 1);
+      assert.deepEqual(log, ["a"]);
+    });
   });
 }
 

@@ -21,7 +21,10 @@ export type LegacyClassDecorator = (target: new (...args: any) => any) =>
   | undefined
   | void;
 
-const deferred = new WeakMap();
+const deferred: WeakMap<
+  object,
+  Map<string | number | symbol, Descriptor>
+> = new WeakMap();
 
 function deferDecorator(
   proto: object,
@@ -135,4 +138,39 @@ export function c(
     (accum, decorator) => decorator(accum) || accum,
     target
   );
+}
+
+// decorate POJO fields and methods
+export function p(
+  pojo: object,
+  decorated: ["field" | "method", string | number | symbol, LegacyDecorator[]][]
+) {
+  for (let [type, prop, decorators] of decorated) {
+    if (type === "field") {
+      decoratePojoField(pojo, prop, decorators);
+    } else {
+      n(pojo, prop, decorators);
+    }
+  }
+  return pojo;
+}
+function decoratePojoField(
+  pojo: object,
+  prop: string | number | symbol,
+  decorators: LegacyDecorator[]
+) {
+  let desc: Descriptor = {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: () => Object.getOwnPropertyDescriptor(pojo, prop)?.value,
+  };
+  for (let decorator of decorators) {
+    desc = decorator(pojo, prop, desc) || desc;
+  }
+  if (desc.initializer) {
+    desc.value = desc.initializer.call(pojo);
+    delete desc.initializer;
+  }
+  Object.defineProperty(pojo, prop, desc);
 }

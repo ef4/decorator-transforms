@@ -8,6 +8,13 @@ const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
+  currentObjectExpressions: {
+    decorated: [
+      "field" | "method",
+      t.Expression, // for the property name
+      t.Expression[], // for the decorators applied to it
+    ][];
+  }[];
   opts: Options;
   runtime: (target: NodePath<t.Node>, fnName: string) => t.Expression;
   optsWithDefaults: Required<Options>;
@@ -27,6 +34,7 @@ export default function legacyDecoratorCompat(
     visitor: {
       Program(path: NodePath<t.Program>, state: State) {
         state.currentClassBodies = [];
+        state.currentObjectExpressions = [];
         state.optsWithDefaults = {
           runtime: "globals",
           ...state.opts,
@@ -219,6 +227,84 @@ export default function legacyDecoratorCompat(
               ),
             ])
           );
+          for (let decorator of decorators) {
+            decorator.remove();
+          }
+        }
+      },
+      ObjectExpression: {
+        enter(_path, state) {
+          state.currentObjectExpressions.unshift({
+            decorated: [],
+          });
+        },
+        exit(path, state) {
+          let { decorated } = state.currentObjectExpressions.shift()!;
+          if (decorated.length > 0) {
+            path.replaceWith(
+              t.callExpression(state.runtime(path, "p"), [
+                path.node,
+                t.arrayExpression(
+                  decorated.map(([type, prop, decorators]) =>
+                    t.arrayExpression([
+                      t.stringLiteral(type),
+                      prop,
+                      t.arrayExpression(decorators),
+                    ])
+                  )
+                ),
+              ])
+            );
+          }
+        },
+      },
+      ObjectProperty(path, state) {
+        let decorators = path.get("decorators") as
+          | NodePath<t.Decorator>[]
+          | NodePath<undefined>;
+        if (Array.isArray(decorators) && decorators.length > 0) {
+          if (state.currentObjectExpressions.length === 0) {
+            throw new Error(
+              `bug in decorator-transforms: didn't expect to see ObjectProperty outside ObjectExpression`
+            );
+          }
+          let prop = path.node.key;
+          if (prop.type === "PrivateName") {
+            throw new Error(`cannot decorate private field`);
+          }
+          state.currentObjectExpressions[0].decorated.push([
+            "field",
+            valueForFieldKey(t, prop),
+            decorators
+              .slice()
+              .reverse()
+              .map((d) => d.node.expression),
+          ]);
+          for (let decorator of decorators) {
+            decorator.remove();
+          }
+        }
+      },
+
+      ObjectMethod(path, state) {
+        let decorators = path.get("decorators") as
+          | NodePath<t.Decorator>[]
+          | NodePath<undefined>;
+        if (Array.isArray(decorators) && decorators.length > 0) {
+          if (state.currentObjectExpressions.length === 0) {
+            throw new Error(
+              `bug in decorator-transforms: didn't expect to see ObjectMethod outside ObjectExpression`
+            );
+          }
+          let prop = path.node.key;
+          state.currentObjectExpressions[0].decorated.push([
+            "method",
+            valueForFieldKey(t, prop),
+            decorators
+              .slice()
+              .reverse()
+              .map((d) => d.node.expression),
+          ]);
           for (let decorator of decorators) {
             decorator.remove();
           }

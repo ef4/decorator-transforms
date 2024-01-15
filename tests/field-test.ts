@@ -380,6 +380,39 @@ function fieldTests(title: string, build: Builder) {
       assert.strictEqual(a.inner.n, 2);
       assert.strictEqual(a.m, 10);
     });
+
+    test("field on object literal", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let example = build.expression(`{ @double value: 1 }`, {
+        double,
+        ...runtime,
+      });
+      assert.strictEqual(example.value, 2);
+    });
+
+    test("field on shorthand object literal", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let example = build.expression(`{ @double value }`, {
+        double,
+        value: 4,
+        ...runtime,
+      });
+      assert.strictEqual(example.value, 8);
+    });
   });
 }
 fieldTests("old-build", oldBuild);
