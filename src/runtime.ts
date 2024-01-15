@@ -53,18 +53,16 @@ function findDeferredDecorator(
   }
 }
 
-// decorateField v1
-export function f(
+function decorateFieldV1(
   target: { prototype: object },
   prop: string | number | symbol,
   decorators: LegacyDecorator[],
   initializer?: () => any
 ): void {
-  return g(target.prototype, prop, decorators, initializer);
+  return decorateFieldV2(target.prototype, prop, decorators, initializer);
 }
 
-// decorateField v2
-export function g(
+function decorateFieldV2(
   prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[],
@@ -89,17 +87,15 @@ export function g(
   }
 }
 
-// decorateMethod v1
-export function m(
+function decorateMethodV1(
   { prototype }: { prototype: object },
   prop: string | number | symbol,
   decorators: LegacyDecorator[]
 ): void {
-  return n(prototype, prop, decorators);
+  return decorateMethodV2(prototype, prop, decorators);
 }
 
-// decorateMethod v2
-export function n(
+function decorateMethodV2(
   prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[]
@@ -116,8 +112,10 @@ export function n(
   Object.defineProperty(prototype, prop, desc);
 }
 
-// initializeDeferredDecorator
-export function i(target: object, prop: string | number | symbol): void {
+function initializeDeferredDecorator(
+  target: object,
+  prop: string | number | symbol
+): void {
   let desc = findDeferredDecorator(target.constructor, prop);
   if (desc) {
     Object.defineProperty(target, prop, {
@@ -129,8 +127,7 @@ export function i(target: object, prop: string | number | symbol): void {
   }
 }
 
-// decorateClass
-export function c(
+function decorateClass(
   target: new (...args: any) => any,
   decorators: LegacyClassDecorator[]
 ): new (...args: any) => any {
@@ -140,8 +137,7 @@ export function c(
   );
 }
 
-// decorate POJO fields and methods
-export function p(
+function decoratePOJO(
   pojo: object,
   decorated: ["field" | "method", string | number | symbol, LegacyDecorator[]][]
 ) {
@@ -149,7 +145,7 @@ export function p(
     if (type === "field") {
       decoratePojoField(pojo, prop, decorators);
     } else {
-      n(pojo, prop, decorators);
+      decorateMethodV2(pojo, prop, decorators);
     }
   }
   return pojo;
@@ -174,3 +170,13 @@ function decoratePojoField(
   }
   Object.defineProperty(pojo, prop, desc);
 }
+
+export {
+  decorateFieldV1 as f,
+  decorateFieldV2 as g,
+  decorateMethodV1 as m,
+  decorateMethodV2 as n,
+  initializeDeferredDecorator as i,
+  decorateClass as c,
+  decoratePOJO as p,
+};
