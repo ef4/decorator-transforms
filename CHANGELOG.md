@@ -1,3 +1,8 @@
+# 1.1.0 (2024-01-15)
+
+- ENHANCEMENT: implement field and method decorators on plain javascript objects
+- BUGFIX: fix naming collisions with existing private fields
+
 # 1.0.3 (2024-01-04)
 
 - BUGFIX: v1.0.2 was not runtime-compatible with prior 1.x releases, so mixing versions would cause errors. This restores the stable API between them.
