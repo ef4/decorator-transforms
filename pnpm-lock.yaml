@@ -22,6 +22,9 @@ devDependencies:
   '@babel/plugin-transform-class-properties':
     specifier: ^7.23.3
     version: 7.23.3(@babel/core@7.23.3)
+  '@babel/plugin-transform-private-methods':
+    specifier: ^7.23.3
+    version: 7.23.3(@babel/core@7.23.3)
   '@swc-node/register':
     specifier: ^1.6.8
     version: 1.6.8(@swc/core@1.3.96)(typescript@5.2.2)
@@ -277,6 +280,17 @@ packages:
 
   /@babel/plugin-transform-class-properties@7.23.3(@babel/core@7.23.3):
     resolution: {integrity: sha512-uM+AN8yCIjDPccsKGlw271xjJtGii+xQIF/uMPS8H15L12jZTsLfF4o5vNO7d/oUguOyfdikHGc/yi9ge4SGIg==}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.23.3
+      '@babel/helper-create-class-features-plugin': 7.22.15(@babel/core@7.23.3)
+      '@babel/helper-plugin-utils': 7.22.5
+    dev: true
+
+  /@babel/plugin-transform-private-methods@7.23.3(@babel/core@7.23.3):
+    resolution: {integrity: sha512-UzqRcRtWsDMTLrRWFvUBDwmw06tCQH9Rl1uAjfh6ijMSmGYQ+fpdB+cnqRC8EMh5tuuxSv0/TejGL+7vyj+50g==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0

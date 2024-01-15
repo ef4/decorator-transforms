@@ -49,7 +49,7 @@ export default function legacyDecoratorCompat(
           state.currentClassBodies.unshift(path.node);
         },
         exit(_path, state) {
-          state.currentClassBodies.pop();
+          state.currentClassBodies.shift();
         },
       },
       ClassExpression(path, state) {
@@ -247,7 +247,7 @@ function unusedPrivateNameLike(state: State, name: string): string {
     }
   }
   let candidate = name;
-  while (usedNames.has("#" + candidate)) {
+  while (usedNames.has(candidate)) {
     candidate = candidate + "_";
   }
   return candidate;
