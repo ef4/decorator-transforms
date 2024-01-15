@@ -3,6 +3,8 @@ import { transform, TransformOptions } from "@babel/core";
 import legacyDecorators from "@babel/plugin-proposal-decorators";
 // @ts-expect-error no upstream types
 import classProperties from "@babel/plugin-transform-class-properties";
+// @ts-expect-error no upstream types
+import classPrivateMethods from "@babel/plugin-transform-private-methods";
 
 import * as vm from "node:vm";
 import ourDecorators, { Options } from "../src/index.ts";
@@ -73,6 +75,7 @@ export interface Builder {
 export const oldBuild: Builder = builder([
   [legacyDecorators, { legacy: true }],
   classProperties,
+  classPrivateMethods,
 ]);
 
 let globalOpts: Options = { runtime: "globals" };

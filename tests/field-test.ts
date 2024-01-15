@@ -305,6 +305,81 @@ function fieldTests(title: string, build: Builder) {
       let a = new Example();
       assert.strictEqual(a[1], 2);
     });
+
+    test("avoids collision with existing private field", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let Example = build.expression(
+        `
+        class Example {
+          #n = 'unrelated';
+          @double n = 1
+        }
+    `,
+        { double, ...runtime }
+      );
+      let a = new Example();
+      assert.strictEqual(a.n, 2);
+    });
+
+    test("avoids collision with existing private method", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let Example = build.expression(
+        `
+        class Example {
+          #n() { return 'unrelated' }
+          @double n = 1
+        }
+    `,
+        { double, ...runtime }
+      );
+      let a = new Example();
+      assert.strictEqual(a.n, 2);
+    });
+
+    test("field within nested class handles name collisions correctly", (assert) => {
+      let double: LegacyDecorator = function (_target, _prop, desc) {
+        return {
+          initializer: function () {
+            return desc.initializer ? desc.initializer.call(this) * 2 : 0;
+          },
+        };
+      };
+
+      let Example = build.expression(
+        `
+        class Example {
+          get inner() {
+            class Inner {
+              #n = 'unrelated';
+              @double n = 1
+            }
+            return new Inner();
+          }
+
+          #m = 'unrelated';
+          @double m = 5;
+        }
+    `,
+        { double, ...runtime }
+      );
+      let a = new Example();
+      assert.strictEqual(a.inner.n, 2);
+      assert.strictEqual(a.m, 10);
+    });
   });
 }
 fieldTests("old-build", oldBuild);
