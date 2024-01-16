@@ -172,11 +172,19 @@ export default function legacyDecoratorCompat(
             );
           }
           path.insertBefore(
-            t.staticBlock([
-              t.expressionStatement(
-                t.callExpression(state.runtime(path, "g"), args)
+            t.classPrivateProperty(
+              t.privateName(
+                t.identifier(
+                  unusedPrivateNameLike(state, propName(path.node.key))
+                )
               ),
-            ])
+              t.sequenceExpression([
+                t.callExpression(state.runtime(path, "g"), args),
+                t.identifier("void 0"),
+              ]),
+              null,
+              true
+            )
           );
           path.insertBefore(
             t.classPrivateProperty(
@@ -212,8 +220,13 @@ export default function legacyDecoratorCompat(
             );
           }
           path.insertAfter(
-            t.staticBlock([
-              t.expressionStatement(
+            t.classPrivateProperty(
+              t.privateName(
+                t.identifier(
+                  unusedPrivateNameLike(state, propName(path.node.key))
+                )
+              ),
+              t.sequenceExpression([
                 t.callExpression(state.runtime(path, "n"), [
                   prototype,
                   valueForFieldKey(t, path.node.key),
@@ -223,9 +236,12 @@ export default function legacyDecoratorCompat(
                       .reverse()
                       .map((d) => d.node.expression)
                   ),
-                ])
-              ),
-            ])
+                ]),
+                t.identifier("void 0"),
+              ]),
+              null,
+              true
+            )
           );
           for (let decorator of decorators) {
             decorator.remove();
