@@ -35,6 +35,7 @@
     "@babel/plugin-proposal-decorators": "^7.23.3",
     "@babel/plugin-transform-class-properties": "^7.23.3",
     "@babel/plugin-transform-private-methods": "^7.23.3",
+    "@embroider/shared-internals": "^2.5.1",
     "@swc-node/register": "^1.6.8",
     "@types/babel__core": "^7.20.4",
     "@types/node": "^20.9.1",

@@ -17,9 +17,10 @@ try {
   );
 }
 
-function builder(
+export function builder(
   exprPlugins: TransformOptions["plugins"],
-  modulePlugins?: TransformOptions["plugins"]
+  modulePlugins?: TransformOptions["plugins"],
+  filename = "example.js"
 ): Builder {
   function expression(src: string, scope: Record<string, any>) {
     let transformedSrc = transform(
@@ -28,7 +29,7 @@ function builder(
     return (${src})
    })
   `,
-      { plugins: exprPlugins }
+      { plugins: exprPlugins, filename }
     )!.code!;
     let fn = eval(transformedSrc);
     return fn(...Object.values(scope));
@@ -37,6 +38,7 @@ function builder(
   async function module(src: string, deps: Record<string, any>) {
     let transformedSrc = transform(src, {
       plugins: modulePlugins ?? exprPlugins,
+      filename,
     })!.code!;
     let context = vm.createContext({ deps });
     let m: vm.SourceTextModule;
