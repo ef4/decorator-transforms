@@ -108,9 +108,9 @@ export default function legacyDecoratorCompat(
               path.parentPath.insertBefore(
                 t.variableDeclaration("const", [t.variableDeclarator(id, call)])
               );
-              path.parentPath.replaceWith(t.exportDefaultDeclaration(id));
+              path.parentPath.node.declaration = id;
             } else {
-              path.parentPath.replaceWith(t.exportDefaultDeclaration(call));
+              path.parentPath.node.declaration = call;
             }
           } else if (path.parentPath.isExportNamedDeclaration()) {
             let id = path.node.id;
