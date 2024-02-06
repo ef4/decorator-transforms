@@ -38,6 +38,13 @@ Example Config:
 }
 ```
 
+### staticBlock
+
+The `staticBlock` option controls how `decorator-transforms` outputs static class blocks:
+
+- `"native"` (_default_) will output native `static { }` blocks ([caniuse](https://caniuse.com/mdn-javascript_classes_static_initialization_blocks))
+- `"fields"` will shim the same functionality using private static class fields. These have slightly wider browser support. ([caniuse](https://caniuse.com/?search=static%20class%20fields))
+
 ## Trying this in an Ember App
 
 1. Install the `decorator-transforms` package.

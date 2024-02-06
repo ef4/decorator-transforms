@@ -12,7 +12,7 @@ interface State extends Babel.PluginPass {
     decorated: [
       "field" | "method",
       t.Expression, // for the property name
-      t.Expression[], // for the decorators applied to it
+      t.Expression[] // for the decorators applied to it
     ][];
   }[];
   opts: Options;
@@ -22,6 +22,7 @@ interface State extends Babel.PluginPass {
 
 export interface Options {
   runtime?: "globals" | { import: string };
+  staticBlock?: "native" | "field";
 }
 
 export default function legacyDecoratorCompat(
@@ -37,6 +38,7 @@ export default function legacyDecoratorCompat(
         state.currentObjectExpressions = [];
         state.optsWithDefaults = {
           runtime: "globals",
+          staticBlock: "native",
           ...state.opts,
         };
         let importUtil = new ImportUtil(t, path);
@@ -172,11 +174,12 @@ export default function legacyDecoratorCompat(
             );
           }
           path.insertBefore(
-            t.staticBlock([
-              t.expressionStatement(
-                t.callExpression(state.runtime(path, "g"), args)
-              ),
-            ])
+            compatStaticBlock(
+              state,
+              t,
+              path.node.key,
+              t.callExpression(state.runtime(path, "g"), args)
+            )
           );
           path.insertBefore(
             t.classPrivateProperty(
@@ -212,20 +215,21 @@ export default function legacyDecoratorCompat(
             );
           }
           path.insertAfter(
-            t.staticBlock([
-              t.expressionStatement(
-                t.callExpression(state.runtime(path, "n"), [
-                  prototype,
-                  valueForFieldKey(t, path.node.key),
-                  t.arrayExpression(
-                    decorators
-                      .slice()
-                      .reverse()
-                      .map((d) => d.node.expression)
-                  ),
-                ])
-              ),
-            ])
+            compatStaticBlock(
+              state,
+              t,
+              path.node.key,
+              t.callExpression(state.runtime(path, "n"), [
+                prototype,
+                valueForFieldKey(t, path.node.key),
+                t.arrayExpression(
+                  decorators
+                    .slice()
+                    .reverse()
+                    .map((d) => d.node.expression)
+                ),
+              ])
+            )
           );
           for (let decorator of decorators) {
             decorator.remove();
@@ -363,4 +367,23 @@ function valueForFieldKey(
     return t.stringLiteral(expr.name);
   }
   return expr;
+}
+
+// create a static block or a private class field depending on the staticBlock option
+function compatStaticBlock(
+  state: State,
+  t: (typeof Babel)["types"],
+  key: t.Expression,
+  expression: t.Expression
+) {
+  if (state.optsWithDefaults.staticBlock === "native") {
+    return t.staticBlock([t.expressionStatement(expression)]);
+  } else {
+    return t.classPrivateProperty(
+      t.privateName(t.identifier(unusedPrivateNameLike(state, propName(key)))),
+      expression,
+      null,
+      true
+    );
+  }
 }

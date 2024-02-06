@@ -21,15 +21,16 @@ function builder(
   exprPlugins: TransformOptions["plugins"],
   modulePlugins?: TransformOptions["plugins"]
 ): Builder {
+  function transformSrc(src: string) {
+    return transform(src, { plugins: exprPlugins })!.code!;
+  }
+
   function expression(src: string, scope: Record<string, any>) {
-    let transformedSrc = transform(
-      `
-   (function(${Object.keys(scope).join(",")}) { 
-    return (${src})
-   })
-  `,
-      { plugins: exprPlugins }
-    )!.code!;
+    let transformedSrc = transformSrc(`
+    (function(${Object.keys(scope).join(",")}) { 
+     return (${src})
+    })
+   `);
     let fn = eval(transformedSrc);
     return fn(...Object.values(scope));
   }
@@ -64,10 +65,11 @@ function builder(
     return m.namespace;
   }
 
-  return { expression, module };
+  return { expression, module, transformSrc };
 }
 
 export interface Builder {
+  transformSrc: (src: string) => string;
   expression: (src: string, scope: Record<string, any>) => any;
   module: (src: string, deps: Record<string, any>) => Promise<any>;
 }
@@ -78,12 +80,24 @@ export const oldBuild: Builder = builder([
   classPrivateMethods,
 ]);
 
-let globalOpts: Options = { runtime: "globals" };
+let globalOpts: Options = { runtime: "globals", staticBlock: "native" };
 let importOpts: Options = {
   runtime: { import: "decorator-transforms/runtime" },
+  staticBlock: "native",
 };
 
 export const newBuild: Builder = builder(
   [[ourDecorators, globalOpts]],
   [[ourDecorators, importOpts]]
+);
+
+let compatGlobalOpts: Options = { runtime: "globals", staticBlock: "field" };
+let compatImportOpts: Options = {
+  runtime: { import: "decorator-transforms/runtime" },
+  staticBlock: "field",
+};
+
+export const compatNewBuild: Builder = builder(
+  [[ourDecorators, compatGlobalOpts]],
+  [[ourDecorators, compatImportOpts]]
 );

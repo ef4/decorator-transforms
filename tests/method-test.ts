@@ -1,5 +1,5 @@
 import { module, test } from "qunit";
-import { oldBuild, newBuild, Builder } from "./helpers.ts";
+import { oldBuild, newBuild, Builder, compatNewBuild } from "./helpers.ts";
 import { type LegacyDecorator } from "../src/runtime.ts";
 import * as runtimeImpl from "../src/runtime.ts";
 import { globalId } from "../src/global-id.ts";
@@ -220,3 +220,4 @@ function methodTests(title: string, build: Builder) {
 
 methodTests("old-build", oldBuild);
 methodTests("new-build", newBuild);
+methodTests("compat-new-build", compatNewBuild);
