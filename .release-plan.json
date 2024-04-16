@@ -1,0 +1,21 @@
+{
+  "solution": {
+    "decorator-transforms": {
+      "impact": "minor",
+      "oldVersion": "1.1.0",
+      "newVersion": "1.2.0",
+      "constraints": [
+        {
+          "impact": "minor",
+          "reason": "Appears in changelog section :rocket: Enhancement"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
+        }
+      ],
+      "pkgJSONPath": "./package.json"
+    }
+  },
+  "description": "## Release (2024-04-16)\n\ndecorator-transforms 1.2.0 (minor)\n\n#### :rocket: Enhancement\n* `decorator-transforms`\n  * [#17](https://github.com/ef4/decorator-transforms/pull/17) Replace static blocks with private static field initializers ([@davidtaylorhq](https://github.com/davidtaylorhq))\n\n#### :house: Internal\n* `decorator-transforms`\n  * [#22](https://github.com/ef4/decorator-transforms/pull/22) add release-plan ([@mansona](https://github.com/mansona))\n\n#### Committers: 2\n- Chris Manson ([@mansona](https://github.com/mansona))\n- David Taylor ([@davidtaylorhq](https://github.com/davidtaylorhq))\n"
+}

@@ -1,5 +1,21 @@
 # Changelog
 
+## Release (2024-04-16)
+
+decorator-transforms 1.2.0 (minor)
+
+#### :rocket: Enhancement
+* `decorator-transforms`
+  * [#17](https://github.com/ef4/decorator-transforms/pull/17) Replace static blocks with private static field initializers ([@davidtaylorhq](https://github.com/davidtaylorhq))
+
+#### :house: Internal
+* `decorator-transforms`
+  * [#22](https://github.com/ef4/decorator-transforms/pull/22) add release-plan ([@mansona](https://github.com/mansona))
+
+#### Committers: 2
+- Chris Manson ([@mansona](https://github.com/mansona))
+- David Taylor ([@davidtaylorhq](https://github.com/davidtaylorhq))
+
 # 1.1.0 (2024-01-15)
 
 - ENHANCEMENT: implement field and method decorators on plain javascript objects
