@@ -32,7 +32,8 @@
     "lint": "tsc",
     "start": "tsup --watch",
     "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@babel/plugin-syntax-decorators": "^7.23.3",
