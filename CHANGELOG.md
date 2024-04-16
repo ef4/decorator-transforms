@@ -1,3 +1,5 @@
+# Changelog
+
 # 1.1.0 (2024-01-15)
 
 - ENHANCEMENT: implement field and method decorators on plain javascript objects

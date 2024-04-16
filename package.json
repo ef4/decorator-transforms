@@ -2,6 +2,13 @@
   "name": "decorator-transforms",
   "version": "1.1.0",
   "description": "Better babel transforms for decorators",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ef4/decorator-transforms.git"
+  },
+  "license": "MIT",
+  "author": "Edward Faulkner <edward@eaf4.com>",
   "type": "module",
   "exports": {
     ".": {
@@ -21,15 +28,16 @@
     "dist/*"
   ],
   "scripts": {
-    "start": "tsup --watch",
     "build": "tsup",
     "lint": "tsc",
+    "start": "tsup --watch",
     "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
     "typecheck": "tsc"
   },
-  "keywords": [],
-  "author": "Edward Faulkner <edward@eaf4.com>",
-  "license": "MIT",
+  "dependencies": {
+    "@babel/plugin-syntax-decorators": "^7.23.3",
+    "babel-import-util": "^2.0.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.23.3",
     "@babel/plugin-proposal-decorators": "^7.23.3",
@@ -40,11 +48,8 @@
     "@types/node": "^20.9.1",
     "@types/qunit": "^2.19.8",
     "qunit": "^2.20.0",
+    "release-plan": "^0.9.0",
     "tsup": "^7.3.0",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "@babel/plugin-syntax-decorators": "^7.23.3",
-    "babel-import-util": "^2.0.1"
   }
 }
