@@ -2,6 +2,17 @@
 
 ## Release (2024-04-16)
 
+decorator-transforms 1.2.1 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#24](https://github.com/ef4/decorator-transforms/pull/24) add a prepare script to make sure it builds ([@mansona](https://github.com/mansona))
+
+#### Committers: 1
+- Chris Manson ([@mansona](https://github.com/mansona))
+
+## Release (2024-04-16)
+
 decorator-transforms 1.2.0 (minor)
 
 #### :rocket: Enhancement
