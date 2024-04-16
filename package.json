@@ -1,6 +1,6 @@
 {
   "name": "decorator-transforms",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Better babel transforms for decorators",
   "keywords": [],
   "repository": {
