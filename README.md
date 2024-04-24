@@ -10,6 +10,18 @@ A transform like `@babel/plugin-proposal-decorators` is still often necessary be
 
 This is new and not yet heavily tested. As far as I can tell, it does implement the complete API surface of `['@babel/plugin-proposal-decorators', { legacy: true }]`, please try it and report bugs.
 
+## Browser Support
+
+Under our default settings, browsers will need to support
+
+- private fields
+- static blocks
+- WeakMap
+
+If you use the `runEarly: true` option (see below) in conjunction with an appropriately-configured `@babel/preset-env`, browsers will only need to support
+
+- WeakMap
+
 ## Options
 
 ### runtime
@@ -38,12 +50,16 @@ Example Config:
 }
 ```
 
-### staticBlock
+### runEarly
 
-The `staticBlock` option controls how `decorator-transforms` outputs static class blocks:
+By default, `decorator-transforms` runs like any normal babel plugin. This works fine when you're targeting any browsers that natively support private fields and static blocks.
 
-- `"native"` (_default_) will output native `static { }` blocks ([caniuse](https://caniuse.com/mdn-javascript_classes_static_initialization_blocks))
-- `"fields"` will shim the same functionality using private static class fields. These have slightly wider browser support. ([caniuse](https://caniuse.com/?search=static%20class%20fields))
+But if you try to transpile away private fields or static blocks, the fairly aggressive timing of those transforms in `@babel/preset-env` means that they will run first and
+
+1.  Incorrectly tell you to install `@babel/plugin-transform-decorators` (which you don't need because you have `decorator-transforms`).
+2.  Fail to transpile-away the private fields and static blocks emitted by `decorator-transforms`.
+
+The solution to both problems is setting `runEarly: true` on `decorator-transforms`. This setting is not the default because it does incur the cost of an extra traversal in babel's `pre` phase.
 
 ## Trying this in an Ember App
 
