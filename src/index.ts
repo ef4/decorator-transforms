@@ -1,10 +1,12 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
-import { createRequire } from "node:module";
 import { ImportUtil } from "babel-import-util";
 import { globalId } from "./global-id.ts";
-const req = createRequire(import.meta.url);
-const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
+
+// @ts-expect-error no upstream types
+import PluginSyntaxDecorators from "@babel/plugin-syntax-decorators";
+const decoratorSyntax =
+  PluginSyntaxDecorators.default || PluginSyntaxDecorators;
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
