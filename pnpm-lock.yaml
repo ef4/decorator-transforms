@@ -9,8 +9,8 @@ dependencies:
     specifier: ^7.23.3
     version: 7.23.3(@babel/core@7.23.3)
   babel-import-util:
-    specifier: ^2.1.0
-    version: 2.1.0
+    specifier: ^3.0.0
+    version: 3.0.0
 
 devDependencies:
   '@babel/core':
@@ -2273,8 +2273,8 @@ packages:
     resolution: {integrity: sha512-TaTivMB6pYI1kXwrFlEhLeGfOqoDNdTxjCdwRfFFkEA30Eu+k48W34nlok2EYWJfFFzqaEmichdNM7th6M5HNw==}
     dev: true
 
-  /babel-import-util@2.1.0:
-    resolution: {integrity: sha512-iL9toY75NhvsNfy4dtjA/9C8B2X1IXSho5KVamya8z9jbozyPW0Fj70xBV+Quki/Cijdj/ANMb85sncTnvIvZg==}
+  /babel-import-util@3.0.0:
+    resolution: {integrity: sha512-4YNPkuVsxAW5lnSTa6cn4Wk49RX6GAB6vX+M6LqEtN0YePqoFczv1/x0EyLK/o+4E1j9jEuYj5Su7IEPab5JHQ==}
     engines: {node: '>= 12.*'}
     dev: false
 

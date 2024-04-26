@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@babel/plugin-syntax-decorators": "^7.23.3",
-    "babel-import-util": "^2.1.0"
+    "babel-import-util": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
