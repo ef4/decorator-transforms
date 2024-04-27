@@ -20,10 +20,11 @@ try {
   );
 }
 
-function builder(
+export function builder(
   exprPlugins: TransformOptions["plugins"],
   modulePlugins?: TransformOptions["plugins"],
-  presets?: TransformOptions["presets"]
+  presets?: TransformOptions["presets"],
+  filename = "example.js"
 ): Builder {
   function transformSrc(src: string) {
     return transform(src, { plugins: exprPlugins, presets })!.code!;
@@ -43,6 +44,7 @@ function builder(
     let transformedSrc = transform(src, {
       plugins: modulePlugins ?? exprPlugins,
       presets,
+      filename,
     })!.code!;
     let context = vm.createContext({ deps });
     let m: vm.SourceTextModule;
