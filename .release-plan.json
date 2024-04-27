@@ -1,0 +1,17 @@
+{
+  "solution": {
+    "decorator-transforms": {
+      "impact": "patch",
+      "oldVersion": "1.2.0",
+      "newVersion": "1.2.1",
+      "constraints": [
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :bug: Bug Fix"
+        }
+      ],
+      "pkgJSONPath": "./package.json"
+    }
+  },
+  "description": "## Release (2024-04-16)\n\ndecorator-transforms 1.2.1 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#24](https://github.com/ef4/decorator-transforms/pull/24) add a prepare script to make sure it builds ([@mansona](https://github.com/mansona))\n\n#### Committers: 1\n- Chris Manson ([@mansona](https://github.com/mansona))\n"
+}

@@ -1,7 +1,7 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
 import { createRequire } from "node:module";
-import { ImportUtil } from "babel-import-util";
+import { ImportUtil, type Importer } from "babel-import-util";
 import { globalId } from "./global-id.ts";
 const req = createRequire(import.meta.url);
 const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
@@ -12,82 +12,81 @@ interface State extends Babel.PluginPass {
     decorated: [
       "field" | "method",
       t.Expression, // for the property name
-      t.Expression[], // for the decorators applied to it
+      t.Expression[] // for the decorators applied to it
     ][];
   }[];
   opts: Options;
-  runtime: (target: NodePath<t.Node>, fnName: string) => t.Expression;
+  runtime: (i: Importer, fnName: string) => t.Expression;
+  util: ImportUtil;
   optsWithDefaults: Required<Options>;
 }
 
 export interface Options {
   runtime?: "globals" | { import: string };
+  runEarly?: boolean;
 }
 
-export default function legacyDecoratorCompat(
-  babel: typeof Babel
-): Babel.PluginObj<State> {
+function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
   const t = babel.types;
   return {
-    inherits: (api: unknown, _options: unknown, dirname: unknown) =>
-      decoratorSyntax(api, { legacy: true }, dirname),
-    visitor: {
-      Program(path: NodePath<t.Program>, state: State) {
-        state.currentClassBodies = [];
-        state.currentObjectExpressions = [];
-        state.optsWithDefaults = {
-          runtime: "globals",
-          ...state.opts,
-        };
-        let importUtil = new ImportUtil(t, path);
-        state.runtime = (target: NodePath<t.Node>, fnName: string) => {
-          const { runtime } = state.optsWithDefaults;
-          if (runtime === "globals") {
-            return t.memberExpression(
-              t.identifier(globalId),
-              t.identifier(fnName)
-            );
-          } else {
-            return importUtil.import(target, runtime.import, fnName);
-          }
-        };
-      },
-      ClassBody: {
-        enter(path, state) {
-          state.currentClassBodies.unshift(path.node);
-        },
-        exit(_path, state) {
-          state.currentClassBodies.shift();
-        },
-      },
-      ClassExpression(path, state) {
-        let decorators = path.get("decorators") as
-          | NodePath<t.Decorator>[]
-          | NodePath<undefined>;
-        if (Array.isArray(decorators) && decorators.length > 0) {
-          let call = t.expressionStatement(
-            t.callExpression(state.runtime(path, "c"), [
-              path.node,
-              t.arrayExpression(
-                decorators
-                  .slice()
-                  .reverse()
-                  .map((d) => d.node.expression)
-              ),
-            ])
+    Program(path: NodePath<t.Program>, state: State) {
+      state.currentClassBodies = [];
+      state.currentObjectExpressions = [];
+      state.optsWithDefaults = {
+        runtime: "globals",
+        runEarly: false,
+        ...state.opts,
+      };
+      state.util = new ImportUtil(babel, path);
+      state.runtime = (i: Importer, fnName: string) => {
+        const { runtime } = state.optsWithDefaults;
+        if (runtime === "globals") {
+          return t.memberExpression(
+            t.identifier(globalId),
+            t.identifier(fnName)
           );
+        } else {
+          return i.import(runtime.import, fnName);
+        }
+      };
+    },
+    ClassBody: {
+      enter(path, state) {
+        state.currentClassBodies.unshift(path.node);
+      },
+      exit(_path, state) {
+        state.currentClassBodies.shift();
+      },
+    },
+    ClassExpression(path, state) {
+      let decorators = path.get("decorators") as
+        | NodePath<t.Decorator>[]
+        | NodePath<undefined>;
+      if (Array.isArray(decorators) && decorators.length > 0) {
+        state.util.replaceWith(path, (i) => {
+          let call = t.callExpression(state.runtime(i, "c"), [
+            path.node,
+            t.arrayExpression(
+              decorators
+                .slice()
+                .reverse()
+                .map((d) => d.node.expression)
+            ),
+          ]);
           for (let decorator of decorators) {
             decorator.remove();
           }
-          path.replaceWith(call);
-        }
-      },
-      ClassDeclaration(path, state) {
-        let decorators = path.get("decorators") as
-          | NodePath<t.Decorator>[]
-          | NodePath<undefined>;
-        if (Array.isArray(decorators) && decorators.length > 0) {
-          let call = t.callExpression(state.runtime(path, "c"), [
+          return call;
+        });
+      }
+    },
+    ClassDeclaration(path, state) {
+      let decorators = path.get("decorators") as
+        | NodePath<t.Decorator>[]
+        | NodePath<undefined>;
+      if (Array.isArray(decorators) && decorators.length > 0) {
+        const buildCall = (i: Importer) => {
+          return t.callExpression(state.runtime(i, "c"), [
             t.classExpression(
               path.node.id,
               path.node.superClass,
@@ -101,215 +100,242 @@ export default function legacyDecoratorCompat(
                 .map((d) => d.node.expression)
             ),
           ]);
+        };
 
-          if (path.parentPath.isExportDefaultDeclaration()) {
-            let id = path.node.id;
-            if (id) {
-              path.parentPath.insertBefore(
-                t.variableDeclaration("const", [t.variableDeclarator(id, call)])
-              );
-              path.parentPath.replaceWith(t.exportDefaultDeclaration(id));
-            } else {
-              path.parentPath.replaceWith(t.exportDefaultDeclaration(call));
-            }
-          } else if (path.parentPath.isExportNamedDeclaration()) {
-            let id = path.node.id;
-            if (!id) {
-              throw new Error(
-                `bug: expected a class name is required in this context`
-              );
-            }
-            path.parentPath.insertBefore(
-              t.variableDeclaration("const", [t.variableDeclarator(id, call)])
+        if (path.parentPath.isExportDefaultDeclaration()) {
+          let id = path.node.id;
+          if (id) {
+            state.util.insertBefore(path.parentPath, (i) =>
+              t.variableDeclaration("const", [
+                t.variableDeclarator(id, buildCall(i)),
+              ])
             );
-            path.parentPath.replaceWith(
-              t.exportNamedDeclaration(null, [t.exportSpecifier(id, id)])
-            );
+            path.parentPath.replaceWith(t.exportDefaultDeclaration(id));
           } else {
-            let id = path.node.id;
-            if (!id) {
-              throw new Error(
-                `bug: expected a class name is required in this context`
-              );
-            }
-            path.replaceWith(
-              t.variableDeclaration("const", [t.variableDeclarator(id, call)])
+            state.util.replaceWith(path.parentPath, (i) =>
+              t.exportDefaultDeclaration(buildCall(i))
             );
           }
-        }
-      },
-      ClassProperty(path, state) {
-        let decorators = path.get("decorators") as
-          | NodePath<t.Decorator>[]
-          | NodePath<undefined>;
-        if (Array.isArray(decorators) && decorators.length > 0) {
-          let prototype: t.Expression;
-          if (path.node.static) {
-            prototype = t.identifier("this");
-          } else {
-            prototype = t.memberExpression(
-              t.identifier("this"),
-              t.identifier("prototype")
+        } else if (path.parentPath.isExportNamedDeclaration()) {
+          let id = path.node.id;
+          if (!id) {
+            throw new Error(
+              `bug: expected a class name is required in this context`
             );
           }
-          let args: t.Expression[] = [
-            prototype,
-            valueForFieldKey(t, path.node.key),
-            t.arrayExpression(
-              decorators
-                .slice()
-                .reverse()
-                .map((d) => d.node.expression)
-            ),
-          ];
-          if (path.node.value) {
-            args.push(
-              t.functionExpression(
-                null,
-                [],
-                t.blockStatement([t.returnStatement(path.node.value)])
-              )
-            );
-          }
-          path.insertBefore(
-            t.staticBlock([
-              t.expressionStatement(
-                t.callExpression(state.runtime(path, "g"), args)
-              ),
+          state.util.insertBefore(path.parentPath, (i) =>
+            t.variableDeclaration("const", [
+              t.variableDeclarator(id, buildCall(i)),
             ])
           );
-          path.insertBefore(
-            t.classPrivateProperty(
-              t.privateName(
-                t.identifier(
-                  unusedPrivateNameLike(state, propName(path.node.key))
-                )
-              ),
-              t.sequenceExpression([
-                t.callExpression(state.runtime(path, "i"), [
-                  t.identifier("this"),
-                  valueForFieldKey(t, path.node.key),
-                ]),
-                t.identifier("void 0"),
-              ])
+          path.parentPath.replaceWith(
+            t.exportNamedDeclaration(null, [t.exportSpecifier(id, id)])
+          );
+        } else {
+          let id = path.node.id;
+          if (!id) {
+            throw new Error(
+              `bug: expected a class name is required in this context`
+            );
+          }
+          state.util.replaceWith(path, (i) =>
+            t.variableDeclaration("const", [
+              t.variableDeclarator(id, buildCall(i)),
+            ])
+          );
+        }
+      }
+    },
+    ClassProperty(path, state) {
+      let decorators = path.get("decorators") as
+        | NodePath<t.Decorator>[]
+        | NodePath<undefined>;
+      if (Array.isArray(decorators) && decorators.length > 0) {
+        let prototype: t.Expression;
+        if (path.node.static) {
+          prototype = t.thisExpression();
+        } else {
+          prototype = t.memberExpression(
+            t.thisExpression(),
+            t.identifier("prototype")
+          );
+        }
+        let args: t.Expression[] = [
+          prototype,
+          valueForFieldKey(t, path.node.key),
+          t.arrayExpression(
+            decorators
+              .slice()
+              .reverse()
+              .map((d) => d.node.expression)
+          ),
+        ];
+        if (path.node.value) {
+          args.push(
+            t.functionExpression(
+              null,
+              [],
+              t.blockStatement([t.returnStatement(path.node.value)])
             )
           );
-          path.remove();
         }
+        state.util.insertBefore(path, (i) =>
+          t.staticBlock([
+            t.expressionStatement(
+              t.callExpression(state.runtime(i, "g"), args)
+            ),
+          ])
+        );
+        state.util.insertBefore(path, (i) =>
+          t.classPrivateProperty(
+            t.privateName(
+              t.identifier(
+                unusedPrivateNameLike(state, propName(path.node.key))
+              )
+            ),
+            t.sequenceExpression([
+              t.callExpression(state.runtime(i, "i"), [
+                t.thisExpression(),
+                valueForFieldKey(t, path.node.key),
+              ]),
+              t.identifier("void 0"),
+            ])
+          )
+        );
+        path.remove();
+      }
+    },
+    ClassMethod(path, state) {
+      let decorators = path.get("decorators") as
+        | NodePath<t.Decorator>[]
+        | NodePath<undefined>;
+      if (Array.isArray(decorators) && decorators.length > 0) {
+        let prototype: t.Expression;
+        if (path.node.static) {
+          prototype = t.thisExpression();
+        } else {
+          prototype = t.memberExpression(
+            t.thisExpression(),
+            t.identifier("prototype")
+          );
+        }
+        state.util.insertAfter(path, (i) =>
+          t.staticBlock([
+            t.expressionStatement(
+              t.callExpression(state.runtime(i, "n"), [
+                prototype,
+                valueForFieldKey(t, path.node.key),
+                t.arrayExpression(
+                  decorators
+                    .slice()
+                    .reverse()
+                    .map((d) => d.node.expression)
+                ),
+              ])
+            ),
+          ])
+        );
+        for (let decorator of decorators) {
+          decorator.remove();
+        }
+      }
+    },
+    ObjectExpression: {
+      enter(_path, state) {
+        state.currentObjectExpressions.unshift({
+          decorated: [],
+        });
       },
-      ClassMethod(path, state) {
-        let decorators = path.get("decorators") as
-          | NodePath<t.Decorator>[]
-          | NodePath<undefined>;
-        if (Array.isArray(decorators) && decorators.length > 0) {
-          let prototype: t.Expression;
-          if (path.node.static) {
-            prototype = t.identifier("this");
-          } else {
-            prototype = t.memberExpression(
-              t.identifier("this"),
-              t.identifier("prototype")
-            );
-          }
-          path.insertAfter(
-            t.staticBlock([
-              t.expressionStatement(
-                t.callExpression(state.runtime(path, "n"), [
-                  prototype,
-                  valueForFieldKey(t, path.node.key),
-                  t.arrayExpression(
-                    decorators
-                      .slice()
-                      .reverse()
-                      .map((d) => d.node.expression)
-                  ),
-                ])
+      exit(path, state) {
+        let { decorated } = state.currentObjectExpressions.shift()!;
+        if (decorated.length > 0) {
+          state.util.replaceWith(path, (i) =>
+            t.callExpression(state.runtime(i, "p"), [
+              path.node,
+              t.arrayExpression(
+                decorated.map(([type, prop, decorators]) =>
+                  t.arrayExpression([
+                    t.stringLiteral(type),
+                    prop,
+                    t.arrayExpression(decorators),
+                  ])
+                )
               ),
             ])
           );
-          for (let decorator of decorators) {
-            decorator.remove();
-          }
         }
       },
-      ObjectExpression: {
-        enter(_path, state) {
-          state.currentObjectExpressions.unshift({
-            decorated: [],
-          });
-        },
-        exit(path, state) {
-          let { decorated } = state.currentObjectExpressions.shift()!;
-          if (decorated.length > 0) {
-            path.replaceWith(
-              t.callExpression(state.runtime(path, "p"), [
-                path.node,
-                t.arrayExpression(
-                  decorated.map(([type, prop, decorators]) =>
-                    t.arrayExpression([
-                      t.stringLiteral(type),
-                      prop,
-                      t.arrayExpression(decorators),
-                    ])
-                  )
-                ),
-              ])
-            );
-          }
-        },
-      },
-      ObjectProperty(path, state) {
-        let decorators = path.get("decorators") as
-          | NodePath<t.Decorator>[]
-          | NodePath<undefined>;
-        if (Array.isArray(decorators) && decorators.length > 0) {
-          if (state.currentObjectExpressions.length === 0) {
-            throw new Error(
-              `bug in decorator-transforms: didn't expect to see ObjectProperty outside ObjectExpression`
-            );
-          }
-          let prop = path.node.key;
-          if (prop.type === "PrivateName") {
-            throw new Error(`cannot decorate private field`);
-          }
-          state.currentObjectExpressions[0].decorated.push([
-            "field",
-            valueForFieldKey(t, prop),
-            decorators
-              .slice()
-              .reverse()
-              .map((d) => d.node.expression),
-          ]);
-          for (let decorator of decorators) {
-            decorator.remove();
-          }
+    },
+    ObjectProperty(path, state) {
+      let decorators = path.get("decorators") as
+        | NodePath<t.Decorator>[]
+        | NodePath<undefined>;
+      if (Array.isArray(decorators) && decorators.length > 0) {
+        if (state.currentObjectExpressions.length === 0) {
+          throw new Error(
+            `bug in decorator-transforms: didn't expect to see ObjectProperty outside ObjectExpression`
+          );
         }
-      },
+        let prop = path.node.key;
+        if (prop.type === "PrivateName") {
+          throw new Error(`cannot decorate private field`);
+        }
+        state.currentObjectExpressions[0].decorated.push([
+          "field",
+          valueForFieldKey(t, prop),
+          decorators
+            .slice()
+            .reverse()
+            .map((d) => d.node.expression),
+        ]);
+        for (let decorator of decorators) {
+          decorator.remove();
+        }
+      }
+    },
 
-      ObjectMethod(path, state) {
-        let decorators = path.get("decorators") as
-          | NodePath<t.Decorator>[]
-          | NodePath<undefined>;
-        if (Array.isArray(decorators) && decorators.length > 0) {
-          if (state.currentObjectExpressions.length === 0) {
-            throw new Error(
-              `bug in decorator-transforms: didn't expect to see ObjectMethod outside ObjectExpression`
-            );
-          }
-          let prop = path.node.key;
-          state.currentObjectExpressions[0].decorated.push([
-            "method",
-            valueForFieldKey(t, prop),
-            decorators
-              .slice()
-              .reverse()
-              .map((d) => d.node.expression),
-          ]);
-          for (let decorator of decorators) {
-            decorator.remove();
-          }
+    ObjectMethod(path, state) {
+      let decorators = path.get("decorators") as
+        | NodePath<t.Decorator>[]
+        | NodePath<undefined>;
+      if (Array.isArray(decorators) && decorators.length > 0) {
+        if (state.currentObjectExpressions.length === 0) {
+          throw new Error(
+            `bug in decorator-transforms: didn't expect to see ObjectMethod outside ObjectExpression`
+          );
         }
-      },
+        let prop = path.node.key;
+        state.currentObjectExpressions[0].decorated.push([
+          "method",
+          valueForFieldKey(t, prop),
+          decorators
+            .slice()
+            .reverse()
+            .map((d) => d.node.expression),
+        ]);
+        for (let decorator of decorators) {
+          decorator.remove();
+        }
+      }
+    },
+  };
+}
+
+export default function legacyDecoratorCompat(
+  babel: typeof Babel
+): Babel.PluginObj<State> {
+  let visitor: Babel.Visitor<State> | undefined = makeVisitor(babel);
+  return {
+    inherits: (api: unknown, _options: unknown, dirname: unknown) =>
+      decoratorSyntax(api, { legacy: true }, dirname),
+    pre(this: State, file) {
+      if (this.opts.runEarly) {
+        babel.traverse(file.ast, makeVisitor(babel), file.scope, this);
+        visitor = undefined;
+      }
+    },
+    get visitor() {
+      return visitor ?? {};
     },
   };
 }
