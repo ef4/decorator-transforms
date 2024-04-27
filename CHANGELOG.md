@@ -1,5 +1,20 @@
 # Changelog
 
+## Release (2024-04-27)
+
+decorator-transforms 2.0.0 (major)
+
+#### :boom: Breaking Change
+* `decorator-transforms`
+  * [#26](https://github.com/ef4/decorator-transforms/pull/26) Implement runEarly for arbitrary browser compatibility ([@ef4](https://github.com/ef4))
+
+#### :house: Internal
+* `decorator-transforms`
+  * [#19](https://github.com/ef4/decorator-transforms/pull/19) Test interop with template-colocation-plugin ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
 ## Release (2024-04-16)
 
 decorator-transforms 1.2.1 (patch)

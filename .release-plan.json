@@ -1,17 +1,21 @@
 {
   "solution": {
     "decorator-transforms": {
-      "impact": "patch",
-      "oldVersion": "1.2.0",
-      "newVersion": "1.2.1",
+      "impact": "major",
+      "oldVersion": "1.2.1",
+      "newVersion": "2.0.0",
       "constraints": [
         {
+          "impact": "major",
+          "reason": "Appears in changelog section :boom: Breaking Change"
+        },
+        {
           "impact": "patch",
-          "reason": "Appears in changelog section :bug: Bug Fix"
+          "reason": "Appears in changelog section :house: Internal"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-04-16)\n\ndecorator-transforms 1.2.1 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#24](https://github.com/ef4/decorator-transforms/pull/24) add a prepare script to make sure it builds ([@mansona](https://github.com/mansona))\n\n#### Committers: 1\n- Chris Manson ([@mansona](https://github.com/mansona))\n"
+  "description": "## Release (2024-04-27)\n\ndecorator-transforms 2.0.0 (major)\n\n#### :boom: Breaking Change\n* `decorator-transforms`\n  * [#26](https://github.com/ef4/decorator-transforms/pull/26) Implement runEarly for arbitrary browser compatibility ([@ef4](https://github.com/ef4))\n\n#### :house: Internal\n* `decorator-transforms`\n  * [#19](https://github.com/ef4/decorator-transforms/pull/19) Test interop with template-colocation-plugin ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
 }
