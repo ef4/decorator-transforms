@@ -26,6 +26,7 @@ module("plugin-interop", (hooks) => {
         ],
         [Colocation],
       ],
+      [],
       join(dir, "example.js")
     );
   });
