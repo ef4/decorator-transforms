@@ -1,8 +1,10 @@
 import { module, test } from "qunit";
-import { newBuild, compatNewBuild } from "./helpers.ts";
+import { newBuild, compatNewBuild, featureAssertions } from "./helpers.ts";
 
-module(`Compat`, () => {
-  test("uses real static blocks when staticBlocks: native", (assert) => {
+module(`Compat`, (hooks) => {
+  featureAssertions(hooks);
+
+  test("uses real static blocks and private fields by default", (assert) => {
     const transformedSrc = newBuild.transformSrc(
       `
         class Example {
@@ -10,10 +12,11 @@ module(`Compat`, () => {
         }
         `
     );
-    assert.true(transformedSrc.includes("static {"));
+    assert.usesFeature(transformedSrc, "staticBlocks");
+    assert.usesFeature(transformedSrc, "privateNames");
   });
 
-  test("uses private static class fields when staticBlocks: fields", (assert) => {
+  test("can transpile away all private fields and static blocks when using runEarly", (assert) => {
     const transformedSrc = compatNewBuild.transformSrc(
       `
         class Example {
@@ -21,6 +24,7 @@ module(`Compat`, () => {
         }
         `
     );
-    assert.false(transformedSrc.includes("static {"));
+    assert.doesNotUseFeature(transformedSrc, "staticBlocks");
+    assert.doesNotUseFeature(transformedSrc, "privateNames");
   });
 });

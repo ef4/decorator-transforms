@@ -37,13 +37,14 @@
   },
   "dependencies": {
     "@babel/plugin-syntax-decorators": "^7.23.3",
-    "babel-import-util": "^2.0.1"
+    "babel-import-util": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
     "@babel/plugin-proposal-decorators": "^7.23.3",
     "@babel/plugin-transform-class-properties": "^7.23.3",
     "@babel/plugin-transform-private-methods": "^7.23.3",
+    "@babel/preset-env": "^7.24.4",
     "@swc-node/register": "^1.6.8",
     "@types/babel__core": "^7.20.4",
     "@types/node": "^20.9.1",
@@ -51,6 +52,6 @@
     "qunit": "^2.20.0",
     "release-plan": "^0.9.0",
     "tsup": "^7.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.5"
   }
 }
