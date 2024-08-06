@@ -8,7 +8,7 @@ A transform like `@babel/plugin-proposal-decorators` is still often necessary be
 
 ## Status
 
-This is new and not yet heavily tested. As far as I can tell, it does implement the complete API surface of `['@babel/plugin-proposal-decorators', { legacy: true }]`, please try it and report bugs.
+This is in use in several large, legacy codebases. As far as I can tell, it implements the complete API surface of `['@babel/plugin-proposal-decorators', { legacy: true }]`. Please report any differences, we aim for bug-for-bug compatibility.
 
 ## Browser Support
 
