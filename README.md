@@ -90,4 +90,4 @@ The solution to both problems is setting `runEarly: true` on `decorator-transfor
 
    In classic builds, `"globals"` is the only `runtime` setting that works because ember-auto-import cannot see the output of this babel transform.
 
-   In Embroider (post https://github.com/embroider-build/embroider/pull/1673), you can use `runtime: require.resolve("decorator-transforms/runtime")` and then you don't need to manually install the globals.
+   In Embroider (post https://github.com/embroider-build/embroider/pull/1673), you can use `runtime: { import: require.resolve("decorator-transforms/runtime") }` and then you don't need to manually install the globals.
