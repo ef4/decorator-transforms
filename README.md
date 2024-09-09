@@ -61,6 +61,10 @@ But if you try to transpile away private fields or static blocks, the fairly agg
 
 The solution to both problems is setting `runEarly: true` on `decorator-transforms`. This setting is not the default because it does incur the cost of an extra traversal in babel's `pre` phase.
 
+## A Note on Naming Conventions
+
+If you try to use the string name "decorator-transforms" in a babel config file, babel will assume you mean the NPM package "babel-plugin-decorator-transforms". This is a terrible convention. The solution is to use the string "module:decorator-transforms" instead.
+
 ## Trying this in an Ember App
 
 1. Install the `decorator-transforms` package.
