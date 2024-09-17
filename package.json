@@ -19,6 +19,8 @@
       "import": "./dist/runtime.js",
       "require": "./dist/runtime.cjs"
     },
+    "./runtime-esm": "./dist/runtime.js",
+    "./runtime-cjs": "./dist/runtime.cjs",
     "./globals": {
       "import": "./dist/globals.js",
       "require": "./dist/globals.cjs"
