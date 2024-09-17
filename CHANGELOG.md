@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2024-09-17)
+
+decorator-transforms 2.1.0 (minor)
+
+#### :rocket: Enhancement
+* `decorator-transforms`
+  * [#30](https://github.com/ef4/decorator-transforms/pull/30) Offer an explicit import path for esm vs cjs runtime ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
 ## Release (2024-04-27)
 
 decorator-transforms 2.0.0 (major)

@@ -1,21 +1,17 @@
 {
   "solution": {
     "decorator-transforms": {
-      "impact": "major",
-      "oldVersion": "1.2.1",
-      "newVersion": "2.0.0",
+      "impact": "minor",
+      "oldVersion": "2.0.0",
+      "newVersion": "2.1.0",
       "constraints": [
         {
-          "impact": "major",
-          "reason": "Appears in changelog section :boom: Breaking Change"
-        },
-        {
-          "impact": "patch",
-          "reason": "Appears in changelog section :house: Internal"
+          "impact": "minor",
+          "reason": "Appears in changelog section :rocket: Enhancement"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-04-27)\n\ndecorator-transforms 2.0.0 (major)\n\n#### :boom: Breaking Change\n* `decorator-transforms`\n  * [#26](https://github.com/ef4/decorator-transforms/pull/26) Implement runEarly for arbitrary browser compatibility ([@ef4](https://github.com/ef4))\n\n#### :house: Internal\n* `decorator-transforms`\n  * [#19](https://github.com/ef4/decorator-transforms/pull/19) Test interop with template-colocation-plugin ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
+  "description": "## Release (2024-09-17)\n\ndecorator-transforms 2.1.0 (minor)\n\n#### :rocket: Enhancement\n* `decorator-transforms`\n  * [#30](https://github.com/ef4/decorator-transforms/pull/30) Offer an explicit import path for esm vs cjs runtime ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
 }
