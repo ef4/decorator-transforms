@@ -30,9 +30,9 @@
     "dist/*"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup --dts",
     "lint": "tsc",
-    "start": "tsup --watch",
+    "start": "tsup --dts --watch",
     "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
     "typecheck": "tsc",
     "prepare": "npm run build"
@@ -56,5 +56,12 @@
     "release-plan": "^0.9.0",
     "tsup": "^7.3.0",
     "typescript": "^5.4.5"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
   }
 }
