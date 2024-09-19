@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2024-09-19)
+
+decorator-transforms 2.2.0 (minor)
+
+#### :rocket: Enhancement
+* `decorator-transforms`
+  * [#31](https://github.com/ef4/decorator-transforms/pull/31) Publish types ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
 ## Release (2024-09-17)
 
 decorator-transforms 2.1.0 (minor)
