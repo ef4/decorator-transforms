@@ -2,8 +2,8 @@
   "solution": {
     "decorator-transforms": {
       "impact": "minor",
-      "oldVersion": "2.0.0",
-      "newVersion": "2.1.0",
+      "oldVersion": "2.1.0",
+      "newVersion": "2.2.0",
       "constraints": [
         {
           "impact": "minor",
@@ -13,5 +13,5 @@
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-09-17)\n\ndecorator-transforms 2.1.0 (minor)\n\n#### :rocket: Enhancement\n* `decorator-transforms`\n  * [#30](https://github.com/ef4/decorator-transforms/pull/30) Offer an explicit import path for esm vs cjs runtime ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
+  "description": "## Release (2024-09-19)\n\ndecorator-transforms 2.2.0 (minor)\n\n#### :rocket: Enhancement\n* `decorator-transforms`\n  * [#31](https://github.com/ef4/decorator-transforms/pull/31) Publish types ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
 }
