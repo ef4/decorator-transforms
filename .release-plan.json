@@ -2,8 +2,8 @@
   "solution": {
     "decorator-transforms": {
       "impact": "patch",
-      "oldVersion": "2.2.0",
-      "newVersion": "2.2.1",
+      "oldVersion": "2.2.1",
+      "newVersion": "2.2.2",
       "constraints": [
         {
           "impact": "patch",
@@ -13,5 +13,5 @@
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-10-01)\n\ndecorator-transforms 2.2.1 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#33](https://github.com/ef4/decorator-transforms/pull/33) Fix unbalanced exit ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
+  "description": "## Release (2024-10-01)\n\ndecorator-transforms 2.2.2 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#35](https://github.com/ef4/decorator-transforms/pull/35) Remove unintentional change that was part of #33 ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
 }

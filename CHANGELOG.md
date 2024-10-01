@@ -2,6 +2,17 @@
 
 ## Release (2024-10-01)
 
+decorator-transforms 2.2.2 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#35](https://github.com/ef4/decorator-transforms/pull/35) Remove unintentional change that was part of #33 ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
+## Release (2024-10-01)
+
 decorator-transforms 2.2.1 (patch)
 
 #### :bug: Bug Fix
