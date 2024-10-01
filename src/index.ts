@@ -1,14 +1,15 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
-import { createRequire } from "node:module";
 import { ImportUtil, type Importer } from "babel-import-util";
 import { globalId } from "./global-id.ts";
-const req = createRequire(import.meta.url);
-const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
+
+// @ts-expect-error no upstream types
+import decoratorSyntax from "@babel/plugin-syntax-decorators";
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
   currentObjectExpressions: {
+    node: t.ObjectExpression;
     decorated: [
       "field" | "method",
       t.Expression, // for the property name
@@ -54,8 +55,10 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
       enter(path, state) {
         state.currentClassBodies.unshift(path.node);
       },
-      exit(_path, state) {
-        state.currentClassBodies.shift();
+      exit(path, state) {
+        if (state.currentClassBodies[0] === path.node) {
+          state.currentClassBodies.shift();
+        }
       },
     },
     ClassExpression(path, state) {
@@ -241,12 +244,16 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
       }
     },
     ObjectExpression: {
-      enter(_path, state) {
+      enter(path, state) {
         state.currentObjectExpressions.unshift({
+          node: path.node,
           decorated: [],
         });
       },
       exit(path, state) {
+        if (state.currentObjectExpressions[0]?.node !== path.node) {
+          return;
+        }
         let { decorated } = state.currentObjectExpressions.shift()!;
         if (decorated.length > 0) {
           state.util.replaceWith(path, (i) =>
