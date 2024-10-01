@@ -1,17 +1,17 @@
 {
   "solution": {
     "decorator-transforms": {
-      "impact": "minor",
-      "oldVersion": "2.1.0",
-      "newVersion": "2.2.0",
+      "impact": "patch",
+      "oldVersion": "2.2.0",
+      "newVersion": "2.2.1",
       "constraints": [
         {
-          "impact": "minor",
-          "reason": "Appears in changelog section :rocket: Enhancement"
+          "impact": "patch",
+          "reason": "Appears in changelog section :bug: Bug Fix"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-09-19)\n\ndecorator-transforms 2.2.0 (minor)\n\n#### :rocket: Enhancement\n* `decorator-transforms`\n  * [#31](https://github.com/ef4/decorator-transforms/pull/31) Publish types ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
+  "description": "## Release (2024-10-01)\n\ndecorator-transforms 2.2.1 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#33](https://github.com/ef4/decorator-transforms/pull/33) Fix unbalanced exit ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
 }

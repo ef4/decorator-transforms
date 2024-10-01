@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2024-10-01)
+
+decorator-transforms 2.2.1 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#33](https://github.com/ef4/decorator-transforms/pull/33) Fix unbalanced exit ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
 ## Release (2024-09-19)
 
 decorator-transforms 2.2.0 (minor)
