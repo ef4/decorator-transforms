@@ -1,10 +1,9 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
-import { createRequire } from "node:module";
 import { ImportUtil, type Importer } from "babel-import-util";
 import { globalId } from "./global-id.ts";
-const req = createRequire(import.meta.url);
-const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
+// @ts-ignore
+import { default as decoratorSyntax } from "@babel/plugin-syntax-decorators";
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
@@ -13,7 +12,7 @@ interface State extends Babel.PluginPass {
     decorated: [
       "field" | "method",
       t.Expression, // for the property name
-      t.Expression[] // for the decorators applied to it
+      t.Expression[], // for the decorators applied to it
     ][];
   }[];
   opts: Options;
@@ -44,7 +43,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
         if (runtime === "globals") {
           return t.memberExpression(
             t.identifier(globalId),
-            t.identifier(fnName)
+            t.identifier(fnName),
           );
         } else {
           return i.import(runtime.import, fnName);
@@ -73,7 +72,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
               decorators
                 .slice()
                 .reverse()
-                .map((d) => d.node.expression)
+                .map((d) => d.node.expression),
             ),
           ]);
           for (let decorator of decorators) {
@@ -94,13 +93,13 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
               path.node.id,
               path.node.superClass,
               path.node.body,
-              [] // decorators removed here
+              [], // decorators removed here
             ),
             t.arrayExpression(
               decorators
                 .slice()
                 .reverse()
-                .map((d) => d.node.expression)
+                .map((d) => d.node.expression),
             ),
           ]);
         };
@@ -111,40 +110,40 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             state.util.insertBefore(path.parentPath, (i) =>
               t.variableDeclaration("const", [
                 t.variableDeclarator(id, buildCall(i)),
-              ])
+              ]),
             );
             path.parentPath.replaceWith(t.exportDefaultDeclaration(id));
           } else {
             state.util.replaceWith(path.parentPath, (i) =>
-              t.exportDefaultDeclaration(buildCall(i))
+              t.exportDefaultDeclaration(buildCall(i)),
             );
           }
         } else if (path.parentPath.isExportNamedDeclaration()) {
           let id = path.node.id;
           if (!id) {
             throw new Error(
-              `bug: expected a class name is required in this context`
+              `bug: expected a class name is required in this context`,
             );
           }
           state.util.insertBefore(path.parentPath, (i) =>
             t.variableDeclaration("const", [
               t.variableDeclarator(id, buildCall(i)),
-            ])
+            ]),
           );
           path.parentPath.replaceWith(
-            t.exportNamedDeclaration(null, [t.exportSpecifier(id, id)])
+            t.exportNamedDeclaration(null, [t.exportSpecifier(id, id)]),
           );
         } else {
           let id = path.node.id;
           if (!id) {
             throw new Error(
-              `bug: expected a class name is required in this context`
+              `bug: expected a class name is required in this context`,
             );
           }
           state.util.replaceWith(path, (i) =>
             t.variableDeclaration("const", [
               t.variableDeclarator(id, buildCall(i)),
-            ])
+            ]),
           );
         }
       }
@@ -160,7 +159,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
         } else {
           prototype = t.memberExpression(
             t.thisExpression(),
-            t.identifier("prototype")
+            t.identifier("prototype"),
           );
         }
         let args: t.Expression[] = [
@@ -170,7 +169,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             decorators
               .slice()
               .reverse()
-              .map((d) => d.node.expression)
+              .map((d) => d.node.expression),
           ),
         ];
         if (path.node.value) {
@@ -178,23 +177,23 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             t.functionExpression(
               null,
               [],
-              t.blockStatement([t.returnStatement(path.node.value)])
-            )
+              t.blockStatement([t.returnStatement(path.node.value)]),
+            ),
           );
         }
         state.util.insertBefore(path, (i) =>
           t.staticBlock([
             t.expressionStatement(
-              t.callExpression(state.runtime(i, "g"), args)
+              t.callExpression(state.runtime(i, "g"), args),
             ),
-          ])
+          ]),
         );
         state.util.insertBefore(path, (i) =>
           t.classPrivateProperty(
             t.privateName(
               t.identifier(
-                unusedPrivateNameLike(state, propName(path.node.key))
-              )
+                unusedPrivateNameLike(state, propName(path.node.key)),
+              ),
             ),
             t.sequenceExpression([
               t.callExpression(state.runtime(i, "i"), [
@@ -202,8 +201,8 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                 valueForFieldKey(t, path.node.key),
               ]),
               t.identifier("void 0"),
-            ])
-          )
+            ]),
+          ),
         );
         path.remove();
       }
@@ -219,7 +218,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
         } else {
           prototype = t.memberExpression(
             t.thisExpression(),
-            t.identifier("prototype")
+            t.identifier("prototype"),
           );
         }
         state.util.insertAfter(path, (i) =>
@@ -232,11 +231,11 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                   decorators
                     .slice()
                     .reverse()
-                    .map((d) => d.node.expression)
+                    .map((d) => d.node.expression),
                 ),
-              ])
+              ]),
             ),
-          ])
+          ]),
         );
         for (let decorator of decorators) {
           decorator.remove();
@@ -265,10 +264,10 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                     t.stringLiteral(type),
                     prop,
                     t.arrayExpression(decorators),
-                  ])
-                )
+                  ]),
+                ),
               ),
-            ])
+            ]),
           );
         }
       },
@@ -280,7 +279,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
       if (Array.isArray(decorators) && decorators.length > 0) {
         if (state.currentObjectExpressions.length === 0) {
           throw new Error(
-            `bug in decorator-transforms: didn't expect to see ObjectProperty outside ObjectExpression`
+            `bug in decorator-transforms: didn't expect to see ObjectProperty outside ObjectExpression`,
           );
         }
         let prop = path.node.key;
@@ -308,7 +307,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
       if (Array.isArray(decorators) && decorators.length > 0) {
         if (state.currentObjectExpressions.length === 0) {
           throw new Error(
-            `bug in decorator-transforms: didn't expect to see ObjectMethod outside ObjectExpression`
+            `bug in decorator-transforms: didn't expect to see ObjectMethod outside ObjectExpression`,
           );
         }
         let prop = path.node.key;
@@ -329,7 +328,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
 }
 
 export default function legacyDecoratorCompat(
-  babel: typeof Babel
+  babel: typeof Babel,
 ): Babel.PluginObj<State> {
   let visitor: Babel.Visitor<State> | undefined = makeVisitor(babel);
   return {
@@ -351,7 +350,7 @@ function unusedPrivateNameLike(state: State, name: string): string {
   let classBody = state.currentClassBodies[0];
   if (!classBody) {
     throw new Error(
-      `bug: no current class body around our class field decorator`
+      `bug: no current class body around our class field decorator`,
     );
   }
   let usedNames = new Set();
@@ -390,7 +389,7 @@ function propName(expr: t.Expression): string {
 // need to become string literals, anything else is already usable as a value.
 function valueForFieldKey(
   t: (typeof Babel)["types"],
-  expr: t.Expression
+  expr: t.Expression,
 ): t.Expression {
   if (expr.type === "Identifier") {
     return t.stringLiteral(expr.name);
