@@ -1,10 +1,9 @@
 import type * as Babel from "@babel/core";
 import type { types as t, NodePath } from "@babel/core";
-import { createRequire } from "node:module";
 import { ImportUtil, type Importer } from "babel-import-util";
 import { globalId } from "./global-id.ts";
-const req = createRequire(import.meta.url);
-const { default: decoratorSyntax } = req("@babel/plugin-syntax-decorators");
+// @ts-ignore
+import { default as decoratorSyntax } from "@babel/plugin-syntax-decorators";
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
@@ -36,7 +35,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
       state.optsWithDefaults = {
         runtime: "globals",
         runEarly: false,
-        ...state.opts,
+        ...state.opts
       };
       state.util = new ImportUtil(babel, path);
       state.runtime = (i: Importer, fnName: string) => {
@@ -59,7 +58,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
         if (state.currentClassBodies[0] === path.node) {
           state.currentClassBodies.shift();
         }
-      },
+      }
     },
     ClassExpression(path, state) {
       let decorators = path.get("decorators") as
@@ -74,7 +73,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                 .slice()
                 .reverse()
                 .map((d) => d.node.expression)
-            ),
+            )
           ]);
           for (let decorator of decorators) {
             decorator.remove();
@@ -101,7 +100,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                 .slice()
                 .reverse()
                 .map((d) => d.node.expression)
-            ),
+            )
           ]);
         };
 
@@ -110,7 +109,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
           if (id) {
             state.util.insertBefore(path.parentPath, (i) =>
               t.variableDeclaration("const", [
-                t.variableDeclarator(id, buildCall(i)),
+                t.variableDeclarator(id, buildCall(i))
               ])
             );
             path.parentPath.replaceWith(t.exportDefaultDeclaration(id));
@@ -128,7 +127,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
           }
           state.util.insertBefore(path.parentPath, (i) =>
             t.variableDeclaration("const", [
-              t.variableDeclarator(id, buildCall(i)),
+              t.variableDeclarator(id, buildCall(i))
             ])
           );
           path.parentPath.replaceWith(
@@ -143,7 +142,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
           }
           state.util.replaceWith(path, (i) =>
             t.variableDeclaration("const", [
-              t.variableDeclarator(id, buildCall(i)),
+              t.variableDeclarator(id, buildCall(i))
             ])
           );
         }
@@ -171,7 +170,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
               .slice()
               .reverse()
               .map((d) => d.node.expression)
-          ),
+          )
         ];
         if (path.node.value) {
           args.push(
@@ -184,9 +183,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
         }
         state.util.insertBefore(path, (i) =>
           t.staticBlock([
-            t.expressionStatement(
-              t.callExpression(state.runtime(i, "g"), args)
-            ),
+            t.expressionStatement(t.callExpression(state.runtime(i, "g"), args))
           ])
         );
         state.util.insertBefore(path, (i) =>
@@ -199,9 +196,9 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             t.sequenceExpression([
               t.callExpression(state.runtime(i, "i"), [
                 t.thisExpression(),
-                valueForFieldKey(t, path.node.key),
+                valueForFieldKey(t, path.node.key)
               ]),
-              t.identifier("void 0"),
+              t.identifier("void 0")
             ])
           )
         );
@@ -233,9 +230,9 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                     .slice()
                     .reverse()
                     .map((d) => d.node.expression)
-                ),
+                )
               ])
-            ),
+            )
           ])
         );
         for (let decorator of decorators) {
@@ -247,7 +244,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
       enter(path, state) {
         state.currentObjectExpressions.unshift({
           node: path.node,
-          decorated: [],
+          decorated: []
         });
       },
       exit(path, state) {
@@ -264,14 +261,14 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                   t.arrayExpression([
                     t.stringLiteral(type),
                     prop,
-                    t.arrayExpression(decorators),
+                    t.arrayExpression(decorators)
                   ])
                 )
-              ),
+              )
             ])
           );
         }
-      },
+      }
     },
     ObjectProperty(path, state) {
       let decorators = path.get("decorators") as
@@ -293,7 +290,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
           decorators
             .slice()
             .reverse()
-            .map((d) => d.node.expression),
+            .map((d) => d.node.expression)
         ]);
         for (let decorator of decorators) {
           decorator.remove();
@@ -318,13 +315,13 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
           decorators
             .slice()
             .reverse()
-            .map((d) => d.node.expression),
+            .map((d) => d.node.expression)
         ]);
         for (let decorator of decorators) {
           decorator.remove();
         }
       }
-    },
+    }
   };
 }
 
@@ -343,7 +340,7 @@ export default function legacyDecoratorCompat(
     },
     get visitor() {
       return visitor ?? {};
-    },
+    }
   };
 }
 
