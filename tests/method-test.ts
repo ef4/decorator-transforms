@@ -1,26 +1,26 @@
-import { module, test } from "qunit";
-import { oldBuild, newBuild, Builder, compatNewBuild } from "./helpers.ts";
-import { type LegacyDecorator } from "../src/runtime.ts";
-import * as runtimeImpl from "../src/runtime.ts";
-import { globalId } from "../src/global-id.ts";
+import { module, test } from 'qunit';
+import { oldBuild, newBuild, Builder, compatNewBuild } from './helpers.ts';
+import { type LegacyDecorator } from '../src/runtime.ts';
+import * as runtimeImpl from '../src/runtime.ts';
+import { globalId } from '../src/global-id.ts';
 const runtime = { [globalId]: runtimeImpl };
 
 function methodTests(title: string, build: Builder) {
   module(`${title}-ClassMethod`, () => {
-    test("noop on undecorated class method", (assert) => {
+    test('noop on undecorated class method', (assert) => {
       let Example = build.expression(
         `
         class Example {
           doIt(){ return 1 };
         }
         `,
-        {}
+        {},
       );
       let example = new Example();
       assert.strictEqual(example.doIt(), 1);
     });
 
-    test("intercepting", (assert) => {
+    test('intercepting', (assert) => {
       let log: any[] = [];
       let intercept: LegacyDecorator = (_target, _prop, desc) => {
         let { value } = desc;
@@ -43,14 +43,14 @@ function methodTests(title: string, build: Builder) {
           doIt(){ return 1 };
         }
         `,
-        { intercept, ...runtime }
+        { intercept, ...runtime },
       );
       let example = new Example();
-      assert.strictEqual(example.doIt("a"), 1);
-      assert.deepEqual(log, ["a"]);
+      assert.strictEqual(example.doIt('a'), 1);
+      assert.deepEqual(log, ['a']);
     });
 
-    test("getter", (assert) => {
+    test('getter', (assert) => {
       let log: any[] = [];
       let intercept: LegacyDecorator = (_target, _prop, desc) => {
         const { get } = desc;
@@ -60,7 +60,7 @@ function methodTests(title: string, build: Builder) {
         return {
           ...desc,
           get: function () {
-            log.push("it ran");
+            log.push('it ran');
             return get.call(this);
           },
         };
@@ -75,14 +75,14 @@ function methodTests(title: string, build: Builder) {
           get value(){ return this.count };
         }
         `,
-        { intercept, ...runtime }
+        { intercept, ...runtime },
       );
       let example = new Example();
       assert.strictEqual(example.value, 1);
-      assert.deepEqual(log, ["it ran"]);
+      assert.deepEqual(log, ['it ran']);
     });
 
-    test("static getter", (assert) => {
+    test('static getter', (assert) => {
       let log: any[] = [];
       let intercept: LegacyDecorator = (_target, _prop, desc) => {
         const { get } = desc;
@@ -92,7 +92,7 @@ function methodTests(title: string, build: Builder) {
         return {
           ...desc,
           get: function () {
-            log.push("it ran");
+            log.push('it ran');
             return get.call(this);
           },
         };
@@ -107,13 +107,13 @@ function methodTests(title: string, build: Builder) {
           static get value(){ return this.count };
         }
         `,
-        { intercept, ...runtime }
+        { intercept, ...runtime },
       );
       assert.strictEqual(Example.value, 1);
-      assert.deepEqual(log, ["it ran"]);
+      assert.deepEqual(log, ['it ran']);
     });
 
-    test("pojo getter", (assert) => {
+    test('pojo getter', (assert) => {
       let log: any[] = [];
       let intercept: LegacyDecorator = (_target, _prop, desc) => {
         const { get } = desc;
@@ -123,7 +123,7 @@ function methodTests(title: string, build: Builder) {
         return {
           ...desc,
           get: function () {
-            log.push("it ran");
+            log.push('it ran');
             return get.call(this);
           },
         };
@@ -138,13 +138,13 @@ function methodTests(title: string, build: Builder) {
           get value(){ return this.count }
         }
         `,
-        { intercept, ...runtime }
+        { intercept, ...runtime },
       );
       assert.strictEqual(Example.value, 1);
-      assert.deepEqual(log, ["it ran"]);
+      assert.deepEqual(log, ['it ran']);
     });
 
-    test("method with string literal name", (assert) => {
+    test('method with string literal name', (assert) => {
       let noop: LegacyDecorator = (_target, _prop, desc) => desc;
 
       let Example = build.expression(
@@ -154,13 +154,13 @@ function methodTests(title: string, build: Builder) {
           "doIt"(){ return 1 };
         }
         `,
-        { noop, ...runtime }
+        { noop, ...runtime },
       );
       let example = new Example();
-      assert.strictEqual(example.doIt("a"), 1);
+      assert.strictEqual(example.doIt('a'), 1);
     });
 
-    test("method with numeric literal name", (assert) => {
+    test('method with numeric literal name', (assert) => {
       let noop: LegacyDecorator = (_target, _prop, desc) => desc;
 
       let Example = build.expression(
@@ -170,13 +170,13 @@ function methodTests(title: string, build: Builder) {
           123(){ return 1 };
         }
         `,
-        { noop, ...runtime }
+        { noop, ...runtime },
       );
       let example = new Example();
-      assert.strictEqual(example[123]("a"), 1);
+      assert.strictEqual(example[123]('a'), 1);
     });
 
-    test("method with bigint literal name", (assert) => {
+    test('method with bigint literal name', (assert) => {
       let noop: LegacyDecorator = (_target, _prop, desc) => desc;
 
       let Example = build.expression(
@@ -186,13 +186,13 @@ function methodTests(title: string, build: Builder) {
           123n(){ return 1 };
         }
         `,
-        { noop, ...runtime }
+        { noop, ...runtime },
       );
       let example = new Example();
-      assert.strictEqual(example[123]("a"), 1);
+      assert.strictEqual(example[123]('a'), 1);
     });
 
-    test("method on object literal", (assert) => {
+    test('method on object literal', (assert) => {
       let log: any[] = [];
       let intercept: LegacyDecorator = (_target, _prop, desc) => {
         let { value } = desc;
@@ -212,12 +212,12 @@ function methodTests(title: string, build: Builder) {
         intercept,
         ...runtime,
       });
-      assert.strictEqual(example.value("a"), 1);
-      assert.deepEqual(log, ["a"]);
+      assert.strictEqual(example.value('a'), 1);
+      assert.deepEqual(log, ['a']);
     });
   });
 }
 
-methodTests("old-build", oldBuild);
-methodTests("new-build", newBuild);
-methodTests("compat-new-build", compatNewBuild);
+methodTests('old-build', oldBuild);
+methodTests('new-build', newBuild);
+methodTests('compat-new-build', compatNewBuild);
