@@ -63,5 +63,6 @@
         "dist/*"
       ]
     }
-  }
+  },
+  "packageManager": "pnpm@9.12.1"
 }
