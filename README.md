@@ -39,10 +39,10 @@ Example Config:
 {
   plugins: [
     [
-      "decorator-transforms",
+      'decorator-transforms',
       {
         runtime: {
-          import: require.resolve("decorator-transforms/runtime"),
+          import: require.resolve('decorator-transforms/runtime'),
         },
       },
     ],
@@ -89,7 +89,7 @@ If you try to use the string name "decorator-transforms" in a babel config file,
 3. At the beginning of `app.js`, install the global runtime helpers:
 
    ```js
-   import "decorator-transforms/globals";
+   import 'decorator-transforms/globals';
    ```
 
    In classic builds, `"globals"` is the only `runtime` setting that works because ember-auto-import cannot see the output of this babel transform.

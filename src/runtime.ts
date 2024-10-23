@@ -10,7 +10,7 @@ export interface Descriptor {
 export type LegacyDecorator = (
   target: object,
   prop: unknown,
-  desc: Descriptor
+  desc: Descriptor,
 ) => Descriptor | null | undefined | void;
 
 export type LegacyClassDecorator = (target: new (...args: any) => any) =>
@@ -29,7 +29,7 @@ const deferred: WeakMap<
 function deferDecorator(
   proto: object,
   prop: string | number | symbol,
-  desc: Descriptor
+  desc: Descriptor,
 ): void {
   let map = deferred.get(proto);
   if (!map) {
@@ -41,7 +41,7 @@ function deferDecorator(
 
 function findDeferredDecorator(
   target: object,
-  prop: string | number | symbol
+  prop: string | number | symbol,
 ): Descriptor | undefined {
   let cursor: object = (target as any).prototype;
   while (cursor) {
@@ -57,7 +57,7 @@ function decorateFieldV1(
   target: { prototype: object },
   prop: string | number | symbol,
   decorators: LegacyDecorator[],
-  initializer?: () => any
+  initializer?: () => any,
 ): void {
   return decorateFieldV2(target.prototype, prop, decorators, initializer);
 }
@@ -66,7 +66,7 @@ function decorateFieldV2(
   prototype: object,
   prop: string | number | symbol,
   decorators: LegacyDecorator[],
-  initializer?: () => any
+  initializer?: () => any,
 ): void {
   let desc: Descriptor = {
     configurable: true,
@@ -90,7 +90,7 @@ function decorateFieldV2(
 function decorateMethodV1(
   { prototype }: { prototype: object },
   prop: string | number | symbol,
-  decorators: LegacyDecorator[]
+  decorators: LegacyDecorator[],
 ): void {
   return decorateMethodV2(prototype, prop, decorators);
 }
@@ -98,7 +98,7 @@ function decorateMethodV1(
 function decorateMethodV2(
   prototype: object,
   prop: string | number | symbol,
-  decorators: LegacyDecorator[]
+  decorators: LegacyDecorator[],
 ): void {
   const origDesc = Object.getOwnPropertyDescriptor(prototype, prop);
   let desc: Descriptor = { ...origDesc };
@@ -114,7 +114,7 @@ function decorateMethodV2(
 
 function initializeDeferredDecorator(
   target: object,
-  prop: string | number | symbol
+  prop: string | number | symbol,
 ): void {
   let desc = findDeferredDecorator(target.constructor, prop);
   if (desc) {
@@ -129,20 +129,24 @@ function initializeDeferredDecorator(
 
 function decorateClass(
   target: new (...args: any) => any,
-  decorators: LegacyClassDecorator[]
+  decorators: LegacyClassDecorator[],
 ): new (...args: any) => any {
   return decorators.reduce(
     (accum, decorator) => decorator(accum) || accum,
-    target
+    target,
   );
 }
 
 function decoratePOJO(
   pojo: object,
-  decorated: ["field" | "method", string | number | symbol, LegacyDecorator[]][]
+  decorated: [
+    'field' | 'method',
+    string | number | symbol,
+    LegacyDecorator[],
+  ][],
 ) {
   for (let [type, prop, decorators] of decorated) {
-    if (type === "field") {
+    if (type === 'field') {
       decoratePojoField(pojo, prop, decorators);
     } else {
       decorateMethodV2(pojo, prop, decorators);
@@ -153,7 +157,7 @@ function decoratePOJO(
 function decoratePojoField(
   pojo: object,
   prop: string | number | symbol,
-  decorators: LegacyDecorator[]
+  decorators: LegacyDecorator[],
 ) {
   let desc: Descriptor = {
     configurable: true,
