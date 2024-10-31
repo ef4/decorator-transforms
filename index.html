@@ -1,0 +1,42 @@
+<html>
+  <!-- View this file with `pnpm dev:browser` -->
+
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="module">
+      import decoratorTransforms from 'decorator-transforms';
+
+      const output = Babel.transform(
+        `
+import { tracked } from '@glimmer/tracking';
+
+export class Demo {
+  @tracked count = 0;
+
+  increment = () => this.count++;
+}
+`,
+        {
+          plugins: [
+            // This plugin
+            [
+              decoratorTransforms,
+              {
+                runtime: {
+                  import: 'decorator-transforms/globals',
+                },
+              },
+            ],
+          ],
+        },
+      );
+
+      document.querySelector('#output').innerHTML = output.code;
+    </script>
+  </head>
+
+  <body>
+    <pre id="output"></pre>
+  </body>
+</html>
