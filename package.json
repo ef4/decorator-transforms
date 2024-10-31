@@ -26,6 +26,13 @@
       "require": "./dist/globals.cjs"
     }
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "files": [
     "dist/*"
   ],
@@ -34,10 +41,10 @@
     "dev:browser": "vite",
     "lint": "tsc && prettier --check .",
     "lint:fix": "prettier --write .",
+    "prepare": "npm run build",
     "start": "tsup --dts --watch",
     "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
-    "typecheck": "tsc",
-    "prepare": "npm run build"
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@babel/plugin-syntax-decorators": "^7.23.3",
@@ -60,13 +67,6 @@
     "tsup": "^7.3.0",
     "typescript": "^5.4.5",
     "vite": "^5.4.10"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
   },
   "packageManager": "pnpm@9.12.1"
 }
