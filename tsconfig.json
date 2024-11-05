@@ -1,6 +1,9 @@
 {
+  "include": ["src"],
   "compilerOptions": {
     "lib": ["es2022", "dom"],
+    "baseUrl": "src",
+    "rootDir": "src",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
