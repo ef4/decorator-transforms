@@ -1,10 +1,11 @@
 import type * as Babel from '@babel/core';
 import type { types as t, NodePath } from '@babel/core';
-import { createRequire } from 'node:module';
 import { ImportUtil, type Importer } from 'babel-import-util';
 import { globalId } from './global-id.ts';
-const req = createRequire(import.meta.url);
-const { default: decoratorSyntax } = req('@babel/plugin-syntax-decorators');
+
+// TS can't find declarations for this package (there aren't any)
+// @ts-ignore
+import { default as decoratorSyntax } from '@babel/plugin-syntax-decorators';
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
