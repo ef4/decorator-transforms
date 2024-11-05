@@ -43,7 +43,7 @@
     "lint:fix": "prettier --write .",
     "prepare": "npm run build",
     "start": "vite build --watch",
-    "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
+    "test": "TS_NODE_PROJECT=./tsconfig.test.json node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
     "typecheck": "tsc"
   },
   "dependencies": {

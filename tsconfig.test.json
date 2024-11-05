@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["es2022", "dom"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "target": "es2020",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "noEmit": true,
+    "sourceMap": true
+  }
+}

@@ -5,7 +5,9 @@ import { globalId } from './global-id.ts';
 
 // TS can't find declarations for this package (there aren't any)
 // @ts-ignore
-import { default as decoratorSyntax } from '@babel/plugin-syntax-decorators';
+import decoratorSyntax from '@babel/plugin-syntax-decorators';
+
+console.log({ decoratorSyntax });
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
