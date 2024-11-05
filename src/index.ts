@@ -4,8 +4,30 @@ import { ImportUtil, type Importer } from 'babel-import-util';
 import { globalId } from './global-id.ts';
 
 // TS can't find declarations for this package (there aren't any)
+// this package is actually CJS, so there are no named exports, only default exports.
+// TypeScript sometimes trolls us and converts module.exports = { ... } to named exports.
+//
+// Because we don't know the environment of *our* consumers, we need to support both
+// ways of accessing `decoratorSyntax` within @babel/plugin-syntax-decorators
 // @ts-ignore
-import { default as decoratorSyntax } from '@babel/plugin-syntax-decorators';
+import * as maybeSyntaxDecorators from '@babel/plugin-syntax-decorators';
+
+// We *may* have a double default now
+function getSyntaxDecorators(maybeModule: any): (...args: any[]) => any {
+  if (!maybeModule) {
+    throw new Error(
+      `Could not find 'decoratorSyntax' in '@babel/plugin-syntax-decorators'`,
+    );
+  }
+
+  if ('default' in maybeModule) {
+    return getSyntaxDecorators(maybeModule.default);
+  }
+
+  return maybeModule;
+}
+
+const decoratorSyntax = getSyntaxDecorators(maybeSyntaxDecorators);
 
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
