@@ -1,5 +1,22 @@
 # Changelog
 
+## Release (2024-11-05)
+
+decorator-transforms 2.2.3 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#37](https://github.com/ef4/decorator-transforms/pull/37) Don't use node APIs (require) ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :house: Internal
+* `decorator-transforms`
+  * [#40](https://github.com/ef4/decorator-transforms/pull/40) Update release-plan ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+  * [#38](https://github.com/ef4/decorator-transforms/pull/38) Prettier ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+  * [#39](https://github.com/ef4/decorator-transforms/pull/39) Set a pnpm via packageManager ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## Release (2024-10-01)
 
 decorator-transforms 2.2.2 (patch)

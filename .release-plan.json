@@ -2,16 +2,20 @@
   "solution": {
     "decorator-transforms": {
       "impact": "patch",
-      "oldVersion": "2.2.1",
-      "newVersion": "2.2.2",
+      "oldVersion": "2.2.2",
+      "newVersion": "2.2.3",
       "constraints": [
         {
           "impact": "patch",
           "reason": "Appears in changelog section :bug: Bug Fix"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-10-01)\n\ndecorator-transforms 2.2.2 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#35](https://github.com/ef4/decorator-transforms/pull/35) Remove unintentional change that was part of #33 ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
+  "description": "## Release (2024-11-05)\n\ndecorator-transforms 2.2.3 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#37](https://github.com/ef4/decorator-transforms/pull/37) Don't use node APIs (require) ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### :house: Internal\n* `decorator-transforms`\n  * [#40](https://github.com/ef4/decorator-transforms/pull/40) Update release-plan ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n  * [#38](https://github.com/ef4/decorator-transforms/pull/38) Prettier ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n  * [#39](https://github.com/ef4/decorator-transforms/pull/39) Set a pnpm via packageManager ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### Committers: 1\n- [@NullVoxPopuli](https://github.com/NullVoxPopuli)\n"
 }
