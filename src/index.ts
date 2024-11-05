@@ -7,8 +7,6 @@ import { globalId } from './global-id.ts';
 // @ts-ignore
 import decoratorSyntax from '@babel/plugin-syntax-decorators';
 
-console.log({ decoratorSyntax });
-
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
   currentObjectExpressions: {
