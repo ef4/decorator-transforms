@@ -2,6 +2,17 @@
 
 ## Release (2024-11-05)
 
+decorator-transforms 2.2.4 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#44](https://github.com/ef4/decorator-transforms/pull/44) Revert "Don't use nodeisms" ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
+## Release (2024-11-05)
+
 decorator-transforms 2.2.3 (patch)
 
 #### :bug: Bug Fix
