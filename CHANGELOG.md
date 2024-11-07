@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2024-11-07)
+
+decorator-transforms 2.3.0 (minor)
+
+#### :rocket: Enhancement
+* `decorator-transforms`
+  * [#46](https://github.com/ef4/decorator-transforms/pull/46) Re-add browser support via removing tsup ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## Release (2024-11-05)
 
 decorator-transforms 2.2.4 (patch)
