@@ -1,17 +1,17 @@
 {
   "solution": {
     "decorator-transforms": {
-      "impact": "patch",
-      "oldVersion": "2.2.3",
-      "newVersion": "2.2.4",
+      "impact": "minor",
+      "oldVersion": "2.2.4",
+      "newVersion": "2.3.0",
       "constraints": [
         {
-          "impact": "patch",
-          "reason": "Appears in changelog section :bug: Bug Fix"
+          "impact": "minor",
+          "reason": "Appears in changelog section :rocket: Enhancement"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2024-11-05)\n\ndecorator-transforms 2.2.4 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#44](https://github.com/ef4/decorator-transforms/pull/44) Revert \"Don't use nodeisms\" ([@ef4](https://github.com/ef4))\n\n#### Committers: 1\n- Edward Faulkner ([@ef4](https://github.com/ef4))\n"
+  "description": "## Release (2024-11-07)\n\ndecorator-transforms 2.3.0 (minor)\n\n#### :rocket: Enhancement\n* `decorator-transforms`\n  * [#46](https://github.com/ef4/decorator-transforms/pull/46) Re-add browser support via removing tsup ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### Committers: 1\n- [@NullVoxPopuli](https://github.com/NullVoxPopuli)\n"
 }
