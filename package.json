@@ -37,13 +37,13 @@
     "dist/*"
   ],
   "scripts": {
-    "build": "tsup --dts",
+    "build": "vite build",
     "dev:browser": "vite",
     "lint": "tsc && prettier --check .",
     "lint:fix": "prettier --write .",
     "prepare": "npm run build",
-    "start": "tsup --dts --watch",
-    "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
+    "start": "vite build --watch",
+    "test": "TS_NODE_PROJECT=./tsconfig.test.json node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -64,9 +64,9 @@
     "prettier": "^3.3.3",
     "qunit": "^2.20.0",
     "release-plan": "^0.9.0",
-    "tsup": "^7.3.0",
     "typescript": "^5.4.5",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vite-plugin-dts": "^4.3.0"
   },
   "packageManager": "pnpm@9.12.1"
 }
