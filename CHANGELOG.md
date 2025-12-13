@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2025-12-13)
+
+decorator-transforms 2.3.1 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#50](https://github.com/ef4/decorator-transforms/pull/50) move identifier to unaryExpression for emitting void 0 ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## Release (2024-11-07)
 
 decorator-transforms 2.3.0 (minor)
