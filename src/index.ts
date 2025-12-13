@@ -202,7 +202,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
                 t.thisExpression(),
                 valueForFieldKey(t, path.node.key),
               ]),
-              t.identifier('void 0'),
+              t.unaryExpression('void', t.numericLiteral(0), true),
             ]),
           ),
         );
