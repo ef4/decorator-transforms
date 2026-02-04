@@ -1,4 +1,9 @@
-import { transform, TransformOptions, parseSync, traverse } from '@babel/core';
+import {
+  transform,
+  type TransformOptions,
+  parseSync,
+  traverse,
+} from '@babel/core';
 
 // @ts-expect-error no upstream types
 import legacyDecorators from '@babel/plugin-proposal-decorators';
@@ -10,7 +15,7 @@ import classPrivateMethods from '@babel/plugin-transform-private-methods';
 import presetEnv from '@babel/preset-env';
 
 import * as vm from 'node:vm';
-import ourDecorators, { Options } from '../src/index.ts';
+import ourDecorators, { type Options } from '../packages/build/src/index.ts';
 
 try {
   new vm.SourceTextModule(`export {}`);

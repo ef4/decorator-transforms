@@ -12,11 +12,7 @@ export default defineConfig({
     outDir: 'dist',
     lib: {
       formats: ['es', 'cjs'],
-      entry: [
-        resolve(dir, 'src/index.ts'),
-        resolve(dir, 'src/runtime.ts'),
-        resolve(dir, 'src/globals.ts'),
-      ],
+      entry: [resolve(dir, 'src/index.ts')],
       name: 'decorator-transforms',
     },
   },
