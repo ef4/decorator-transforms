@@ -1,8 +1,14 @@
 {
   "include": ["src"],
+  "exclude": ["dist", "node_modules"],
   "compilerOptions": {
+    "composite": true,
     "lib": ["es2022", "dom"],
     "baseUrl": "src",
+    "declaration": true,
+    "declarationOnly": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
     "rootDir": "src",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -11,7 +17,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
-    "noEmit": true,
     "sourceMap": true
   }
 }

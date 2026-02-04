@@ -10,7 +10,7 @@
     "decorator-transforms-runtime": "workspace:*",
     "prettier": "^3.3.3",
     "release-plan": "^0.9.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.9.3",
     "vite": "^5.4.10",
     "vite-plugin-dts": "^4.3.0"
   },
@@ -21,7 +21,7 @@
     "lint": "tsc && prettier --check .",
     "lint:fix": "prettier --write .",
     "start": "vite build --watch",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "test": "pnpm --filter 'tests' test"
   },
   "packageManager": "pnpm@9.12.1",
