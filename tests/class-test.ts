@@ -1,9 +1,11 @@
-import { module, test } from 'qunit';
-import { oldBuild, newBuild, Builder, compatNewBuild } from './helpers.ts';
-import { type LegacyClassDecorator } from '../src/runtime.ts';
-import * as runtimeImpl from '../src/runtime.ts';
-import { globalId } from '../src/global-id.ts';
+import QUnit from 'qunit';
+import { oldBuild, newBuild, type Builder, compatNewBuild } from './helpers.ts';
+import { type LegacyClassDecorator } from '../packages/runtime/src/runtime.ts';
+import * as runtimeImpl from '../packages/runtime/src/runtime.ts';
+import { globalId } from '../packages/runtime/src/global-id.ts';
 const runtime = { [globalId]: runtimeImpl };
+
+const { module, test } = QUnit;
 
 function classTests(title: string, build: Builder) {
   module(`${title}-Class`, () => {

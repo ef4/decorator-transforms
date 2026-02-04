@@ -29,9 +29,9 @@ If you use the `runEarly: true` option (see below) in conjunction with an approp
 The `runtime` option controls how the emitted code will find the (small) runtime helper module. You can set it to:
 
 - `"globals"` (_default_), which means the helpers must be installed in a global variable.
-  You can install them by adding `import "decorator-transform/globals"` at the
+  You can install them by adding `import "decorator-transform-runtime/globals"` at the
   very beginning of your app.
-- `{ import: "some-module-path" }`, which means the helpers will be imported as needed from the module path you specify. The module path `"decorator-transforms/runtime"` is available within this package for this purpose, but keep in mind that it might not always work if you're transpiling third-party dependencies that cannot necessarily resolve your app's dependencies. In that case you might want to `require.resolve` it to an absolute path instead.
+- `{ import: "some-module-path" }`, which means the helpers will be imported as needed from the module path you specify. The module path `"decorator-transforms-runtime"` is available within this package for this purpose, but keep in mind that it might not always work if you're transpiling third-party dependencies that cannot necessarily resolve your app's dependencies. In that case you might want to `require.resolve` it to an absolute path instead.
 
 Example Config:
 
@@ -42,7 +42,7 @@ Example Config:
       'decorator-transforms',
       {
         runtime: {
-          import: require.resolve('decorator-transforms/runtime'),
+          import: require.resolve('decorator-transforms-runtime'),
         },
       },
     ],
@@ -89,9 +89,9 @@ If you try to use the string name "decorator-transforms" in a babel config file,
 3. At the beginning of `app.js`, install the global runtime helpers:
 
    ```js
-   import 'decorator-transforms/globals';
+   import 'decorator-transforms-runtime/globals';
    ```
 
    In classic builds, `"globals"` is the only `runtime` setting that works because ember-auto-import cannot see the output of this babel transform.
 
-   In Embroider (post https://github.com/embroider-build/embroider/pull/1673), you can use `runtime: { import: require.resolve("decorator-transforms/runtime") }` and then you don't need to manually install the globals.
+   In Embroider (post https://github.com/embroider-build/embroider/pull/1673), you can use `runtime: { import: require.resolve("decorator-transforms-runtime") }` and then you don't need to manually install the globals.

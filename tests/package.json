@@ -1,0 +1,19 @@
+{
+  "name": "tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/qunit/bin/qunit.js '**/*-test.ts'"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.3",
+    "@babel/plugin-proposal-decorators": "^7.23.3",
+    "@babel/plugin-transform-class-properties": "^7.23.3",
+    "@babel/plugin-transform-private-methods": "^7.23.3",
+    "@babel/preset-env": "^7.24.4",
+    "@swc-node/register": "^1.6.8",
+    "@types/babel__core": "^7.20.4",
+    "@types/qunit": "^2.19.8",
+    "qunit": "^2.20.0"
+  }
+}

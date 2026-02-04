@@ -1,8 +1,8 @@
 import { module, test } from 'qunit';
 import { builder } from './helpers.ts';
-import { type LegacyClassDecorator } from '../src/runtime.ts';
-import * as runtimeImpl from '../src/runtime.ts';
-import ourDecorators from '../src/index.ts';
+import { type LegacyClassDecorator } from '../packages/runtime/src/runtime.ts';
+import * as runtimeImpl from '../packages/runtime/src/runtime.ts';
+import ourDecorators from '../packages/build/src/index.ts';
 import { createRequire } from 'node:module';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';

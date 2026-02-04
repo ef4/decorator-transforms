@@ -1,72 +1,31 @@
 {
-  "name": "decorator-transforms",
-  "version": "2.3.1",
-  "description": "Better babel transforms for decorators",
-  "keywords": [],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:ef4/decorator-transforms.git"
-  },
-  "license": "MIT",
-  "author": "Edward Faulkner <edward@eaf4.com>",
+  "name": "monorepo-root",
+  "private": true,
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./runtime": {
-      "import": "./dist/runtime.js",
-      "require": "./dist/runtime.cjs"
-    },
-    "./runtime-esm": "./dist/runtime.js",
-    "./runtime-cjs": "./dist/runtime.cjs",
-    "./globals": {
-      "import": "./dist/globals.js",
-      "require": "./dist/globals.cjs"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
-  "files": [
-    "dist/*"
-  ],
-  "scripts": {
-    "build": "vite build",
-    "dev:browser": "vite",
-    "lint": "tsc && prettier --check .",
-    "lint:fix": "prettier --write .",
-    "prepare": "npm run build",
-    "start": "vite build --watch",
-    "test": "TS_NODE_PROJECT=./tsconfig.test.json node --experimental-vm-modules node_modules/qunit/bin/qunit.js --require @swc-node/register tests/*-test.ts",
-    "typecheck": "tsc"
-  },
-  "dependencies": {
-    "@babel/plugin-syntax-decorators": "^7.23.3",
-    "babel-import-util": "^3.0.0"
-  },
   "devDependencies": {
-    "@babel/core": "^7.23.3",
-    "@babel/plugin-proposal-decorators": "^7.23.3",
-    "@babel/plugin-transform-class-properties": "^7.23.3",
-    "@babel/plugin-transform-private-methods": "^7.23.3",
-    "@babel/preset-env": "^7.24.4",
-    "@embroider/shared-internals": "^2.5.1",
-    "@swc-node/register": "^1.6.8",
-    "@types/babel__core": "^7.20.4",
-    "@types/node": "^20.9.1",
-    "@types/qunit": "^2.19.8",
+    "@tsconfig/node-lts": "^24.0.0",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/node": "^22.0.0",
+    "decorator-transforms": "workspace:*",
+    "decorator-transforms-runtime": "workspace:*",
     "prettier": "^3.3.3",
-    "qunit": "^2.20.0",
     "release-plan": "^0.9.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.9.3",
     "vite": "^5.4.10",
     "vite-plugin-dts": "^4.3.0"
   },
-  "packageManager": "pnpm@9.12.1"
+  "scripts": {
+    "prepare": "pnpm --filter '*' build",
+    "build": "pnpm --filter '*' build",
+    "dev:browser": "vite",
+    "lint": "tsc && prettier --check .",
+    "lint:fix": "prettier --write .",
+    "start": "vite build --watch",
+    "typecheck": "tsc --build",
+    "test": "pnpm --filter 'tests' test"
+  },
+  "packageManager": "pnpm@9.12.1",
+  "engines": {
+    "node": ">= 22.22"
+  }
 }

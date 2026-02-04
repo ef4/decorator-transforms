@@ -1,0 +1,23 @@
+{
+  "include": ["./*-test.ts", "helpers.ts"],
+  "exclude": ["dist", "node_modules"],
+  "references": [
+    { "path": "../packages/build/tsconfig.json" },
+    { "path": "../packages/runtime/tsconfig.json" }
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["es2022", "dom"],
+    "module": "NodeNext",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "dist",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "target": "es2020",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "sourceMap": true
+  }
+}

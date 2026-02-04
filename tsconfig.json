@@ -1,17 +1,9 @@
 {
-  "include": ["src"],
-  "compilerOptions": {
-    "lib": ["es2022", "dom"],
-    "baseUrl": "src",
-    "rootDir": "src",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "allowImportingTsExtensions": true,
-    "target": "es2020",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "noEmit": true,
-    "sourceMap": true
-  }
+  "include": [],
+  "extends": ["@tsconfig/strictest", "@tsconfig/node-lts"],
+  "references": [
+    { "path": "./packages/build/tsconfig.json" },
+    { "path": "./packages/runtime/tsconfig.json" },
+    { "path": "./tests/tsconfig.json" }
+  ]
 }

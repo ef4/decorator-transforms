@@ -1,8 +1,8 @@
 import { module, test } from 'qunit';
 import { oldBuild, newBuild, Builder, compatNewBuild } from './helpers.ts';
-import { type LegacyDecorator } from '../src/runtime.ts';
-import * as runtimeImpl from '../src/runtime.ts';
-import { globalId } from '../src/global-id.ts';
+import { type LegacyDecorator } from '../packages/runtime/src/runtime.ts';
+import * as runtimeImpl from '../packages/runtime/src/runtime.ts';
+import { globalId } from '../packages/runtime/src/global-id.ts';
 
 const runtime = { [globalId]: runtimeImpl };
 
