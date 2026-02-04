@@ -21,7 +21,7 @@
     "lint": "tsc && prettier --check .",
     "lint:fix": "prettier --write .",
     "start": "vite build --watch",
-    "typecheck": "tsc",
+    "typecheck": "tsc --build",
     "test": "pnpm --filter 'tests' test"
   },
   "packageManager": "pnpm@9.12.1",

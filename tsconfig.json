@@ -1,14 +1,9 @@
 {
   "include": [],
   "extends": ["@tsconfig/strictest", "@tsconfig/node-lts"],
-  "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationDir": "dist"
-  },
   "references": [
-    { "path": "./packages/build" },
-    { "path": "./packages/runtime" },
-    { "path": "./tests" }
+    { "path": "./packages/build/tsconfig.json" },
+    { "path": "./packages/runtime/tsconfig.json" },
+    { "path": "./tests/tsconfig.json" }
   ]
 }

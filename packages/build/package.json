@@ -42,7 +42,7 @@
     "@babel/preset-env": "^7.24.4",
     "@embroider/shared-internals": "^2.5.1",
     "@types/babel__core": "^7.20.4",
-    "@types/node": "^20.9.1",
+    "@types/node": "^22.0.0",
     "vite": "^5.4.10",
     "vite-plugin-dts": "^4.3.0"
   }
