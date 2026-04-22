@@ -413,6 +413,83 @@ function fieldTests(title: string, build: Builder) {
       });
       assert.strictEqual(example.value, 8);
     });
+
+    test('subclass inherits deferred field initializer from parent', (assert) => {
+      let noop: LegacyDecorator = function (_target, _prop, desc) {
+        return desc;
+      };
+
+      let Parent = build.expression(
+        `
+        class Parent {
+          @noop value = 'parent-value';
+        }
+        `,
+        { noop, ...runtime },
+      );
+
+      let Child = build.expression(
+        `
+        class Child extends Parent {
+          @noop other = 'child-value';
+        }
+        `,
+        { noop, Parent, ...runtime },
+      );
+
+      let child = new Child();
+      assert.strictEqual(
+        child.value,
+        'parent-value',
+        'child inherits parent decorated field',
+      );
+      assert.strictEqual(
+        child.other,
+        'child-value',
+        'child has own decorated field',
+      );
+
+      let parent = new Parent();
+      assert.strictEqual(parent.value, 'parent-value', 'parent field exists');
+    });
+
+    test('subclass inherits deferred field initializer through multiple levels', (assert) => {
+      let noop: LegacyDecorator = function (_target, _prop, desc) {
+        return desc;
+      };
+
+      let GrandParent = build.expression(
+        `
+        class GrandParent {
+          @noop a = 'grandparent';
+        }
+        `,
+        { noop, ...runtime },
+      );
+
+      let Parent = build.expression(
+        `
+        class Parent extends GrandParent {
+          @noop b = 'parent';
+        }
+        `,
+        { noop, GrandParent, ...runtime },
+      );
+
+      let Child = build.expression(
+        `
+        class Child extends Parent {
+          @noop c = 'child';
+        }
+        `,
+        { noop, Parent, ...runtime },
+      );
+
+      let child = new Child();
+      assert.strictEqual(child.a, 'grandparent');
+      assert.strictEqual(child.b, 'parent');
+      assert.strictEqual(child.c, 'child');
+    });
   });
 }
 fieldTests('old-build', oldBuild);
