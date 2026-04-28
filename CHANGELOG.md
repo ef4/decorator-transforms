@@ -1,5 +1,21 @@
 # Changelog
 
+## Release (2026-04-28)
+
+* decorator-transforms 2.3.2 (patch)
+
+#### :bug: Bug Fix
+* `decorator-transforms`
+  * [#53](https://github.com/ef4/decorator-transforms/pull/53) Fix: inherited field attributes not available for children ([@BobrImperator](https://github.com/BobrImperator))
+
+#### :house: Internal
+* `decorator-transforms`
+  * [#54](https://github.com/ef4/decorator-transforms/pull/54) update release plan ([@mansona](https://github.com/mansona))
+
+#### Committers: 2
+- Bartlomiej Dudzik ([@BobrImperator](https://github.com/BobrImperator))
+- Chris Manson ([@mansona](https://github.com/mansona))
+
 ## Release (2025-12-13)
 
 decorator-transforms 2.3.1 (patch)

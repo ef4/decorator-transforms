@@ -2,16 +2,21 @@
   "solution": {
     "decorator-transforms": {
       "impact": "patch",
-      "oldVersion": "2.3.0",
-      "newVersion": "2.3.1",
+      "oldVersion": "2.3.1",
+      "newVersion": "2.3.2",
+      "tagName": "latest",
       "constraints": [
         {
           "impact": "patch",
           "reason": "Appears in changelog section :bug: Bug Fix"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
         }
       ],
       "pkgJSONPath": "./package.json"
     }
   },
-  "description": "## Release (2025-12-13)\n\ndecorator-transforms 2.3.1 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#50](https://github.com/ef4/decorator-transforms/pull/50) move identifier to unaryExpression for emitting void 0 ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### Committers: 1\n- [@NullVoxPopuli](https://github.com/NullVoxPopuli)\n"
+  "description": "## Release (2026-04-28)\n\n* decorator-transforms 2.3.2 (patch)\n\n#### :bug: Bug Fix\n* `decorator-transforms`\n  * [#53](https://github.com/ef4/decorator-transforms/pull/53) Fix: inherited field attributes not available for children ([@BobrImperator](https://github.com/BobrImperator))\n\n#### :house: Internal\n* `decorator-transforms`\n  * [#54](https://github.com/ef4/decorator-transforms/pull/54) update release plan ([@mansona](https://github.com/mansona))\n\n#### Committers: 2\n- Bartlomiej Dudzik ([@BobrImperator](https://github.com/BobrImperator))\n- Chris Manson ([@mansona](https://github.com/mansona))\n"
 }
