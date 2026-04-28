@@ -49,7 +49,7 @@ function findDeferredDecorator(
     if (desc) {
       return desc;
     }
-    cursor = (cursor as any).prototype;
+    cursor = Object.getPrototypeOf(cursor);
   }
 }
 
