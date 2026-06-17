@@ -3,10 +3,6 @@ import type { types as t, NodePath } from '@babel/core';
 import { ImportUtil, type Importer } from 'babel-import-util';
 import { globalId } from './global-id.ts';
 
-// TS can't find declarations for this package (there aren't any)
-// @ts-ignore
-import decoratorSyntax from '@babel/plugin-syntax-decorators';
-
 interface State extends Babel.PluginPass {
   currentClassBodies: t.ClassBody[];
   currentObjectExpressions: {
@@ -65,7 +61,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
     ClassExpression(path, state) {
       let decorators = path.get('decorators') as
         | NodePath<t.Decorator>[]
-        | NodePath<undefined>;
+        | NodePath<null>;
       if (Array.isArray(decorators) && decorators.length > 0) {
         state.util.replaceWith(path, (i) => {
           let call = t.callExpression(state.runtime(i, 'c'), [
@@ -87,7 +83,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
     ClassDeclaration(path, state) {
       let decorators = path.get('decorators') as
         | NodePath<t.Decorator>[]
-        | NodePath<undefined>;
+        | NodePath<null>;
       if (Array.isArray(decorators) && decorators.length > 0) {
         const buildCall = (i: Importer) => {
           return t.callExpression(state.runtime(i, 'c'), [
@@ -153,7 +149,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
     ClassProperty(path, state) {
       let decorators = path.get('decorators') as
         | NodePath<t.Decorator>[]
-        | NodePath<undefined>;
+        | NodePath<null>;
       if (Array.isArray(decorators) && decorators.length > 0) {
         let prototype: t.Expression;
         if (path.node.static) {
@@ -183,14 +179,14 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             ),
           );
         }
-        state.util.insertBefore(path, (i) =>
+        state.util.insertBefore(path as NodePath<t.ClassProperty>, (i) =>
           t.staticBlock([
             t.expressionStatement(
               t.callExpression(state.runtime(i, 'g'), args),
             ),
           ]),
         );
-        state.util.insertBefore(path, (i) =>
+        state.util.insertBefore(path as NodePath<t.ClassProperty>, (i) =>
           t.classPrivateProperty(
             t.privateName(
               t.identifier(
@@ -212,7 +208,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
     ClassMethod(path, state) {
       let decorators = path.get('decorators') as
         | NodePath<t.Decorator>[]
-        | NodePath<undefined>;
+        | NodePath<null>;
       if (Array.isArray(decorators) && decorators.length > 0) {
         let prototype: t.Expression;
         if (path.node.static) {
@@ -223,7 +219,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             t.identifier('prototype'),
           );
         }
-        state.util.insertAfter(path, (i) =>
+        state.util.insertAfter(path as NodePath<t.ClassMethod>, (i) =>
           t.staticBlock([
             t.expressionStatement(
               t.callExpression(state.runtime(i, 'n'), [
@@ -277,7 +273,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
     ObjectProperty(path, state) {
       let decorators = path.get('decorators') as
         | NodePath<t.Decorator>[]
-        | NodePath<undefined>;
+        | NodePath<null>;
       if (Array.isArray(decorators) && decorators.length > 0) {
         if (state.currentObjectExpressions.length === 0) {
           throw new Error(
@@ -305,7 +301,7 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
     ObjectMethod(path, state) {
       let decorators = path.get('decorators') as
         | NodePath<t.Decorator>[]
-        | NodePath<undefined>;
+        | NodePath<null>;
       if (Array.isArray(decorators) && decorators.length > 0) {
         if (state.currentObjectExpressions.length === 0) {
           throw new Error(
@@ -331,11 +327,32 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
 
 export default function legacyDecoratorCompat(
   babel: typeof Babel,
-): Babel.PluginObj<State> {
+): Babel.PluginObject<State> {
   let visitor: Babel.Visitor<State> | undefined = makeVisitor(babel);
   return {
-    inherits: (api: unknown, _options: unknown, dirname: unknown) =>
-      decoratorSyntax(api, { legacy: true }, dirname),
+    // Enable decorator parser support directly via manipulateOptions instead
+    // of depending on @babel/plugin-syntax-decorators. This keeps the plugin
+    // working across both Babel 7 and 8 without a hard dependency on either.
+    manipulateOptions(
+      _opts: unknown,
+      parserOpts: { plugins?: Array<string | [string, ...unknown[]]> },
+    ) {
+      const plugins = (parserOpts.plugins ??= []);
+
+      const hasLegacyDecorators = plugins.some(
+        (plugin: string | [string, ...unknown[]]) => {
+          if (plugin === 'decorators-legacy') {
+            return true;
+          }
+          return Array.isArray(plugin) && plugin[0] === 'decorators';
+        },
+      );
+
+      if (!hasLegacyDecorators) {
+        plugins.push('decorators-legacy');
+      }
+    },
+
     pre(this: State, file) {
       if (this.opts.runEarly) {
         babel.traverse(file.ast, makeVisitor(babel), file.scope, this);
