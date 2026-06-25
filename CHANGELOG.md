@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2026-06-25)
+
+* decorator-transforms 2.4.0 (minor)
+
+#### :rocket: Enhancement
+* `decorator-transforms`
+  * [#57](https://github.com/ef4/decorator-transforms/pull/57) Support Babel 8, adjusted ([@ef4](https://github.com/ef4))
+
+#### Committers: 1
+- Edward Faulkner ([@ef4](https://github.com/ef4))
+
 ## Release (2026-04-28)
 
 * decorator-transforms 2.3.2 (patch)
