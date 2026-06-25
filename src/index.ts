@@ -179,28 +179,30 @@ function makeVisitor(babel: typeof Babel): Babel.Visitor<State> {
             ),
           );
         }
-        state.util.insertBefore(path as NodePath<t.ClassProperty>, (i) =>
+        state.util.insertBefore<t.ClassProperty, t.StaticBlock>(path, (i) =>
           t.staticBlock([
             t.expressionStatement(
               t.callExpression(state.runtime(i, 'g'), args),
             ),
           ]),
         );
-        state.util.insertBefore(path as NodePath<t.ClassProperty>, (i) =>
-          t.classPrivateProperty(
-            t.privateName(
-              t.identifier(
-                unusedPrivateNameLike(state, propName(path.node.key)),
+        state.util.insertBefore<t.ClassProperty, t.ClassPrivateProperty>(
+          path,
+          (i) =>
+            t.classPrivateProperty(
+              t.privateName(
+                t.identifier(
+                  unusedPrivateNameLike(state, propName(path.node.key)),
+                ),
               ),
-            ),
-            t.sequenceExpression([
-              t.callExpression(state.runtime(i, 'i'), [
-                t.thisExpression(),
-                valueForFieldKey(t, path.node.key),
+              t.sequenceExpression([
+                t.callExpression(state.runtime(i, 'i'), [
+                  t.thisExpression(),
+                  valueForFieldKey(t, path.node.key),
+                ]),
+                t.unaryExpression('void', t.numericLiteral(0), true),
               ]),
-              t.unaryExpression('void', t.numericLiteral(0), true),
-            ]),
-          ),
+            ),
         );
         path.remove();
       }
@@ -333,24 +335,8 @@ export default function legacyDecoratorCompat(
     // Enable decorator parser support directly via manipulateOptions instead
     // of depending on @babel/plugin-syntax-decorators. This keeps the plugin
     // working across both Babel 7 and 8 without a hard dependency on either.
-    manipulateOptions(
-      _opts: unknown,
-      parserOpts: { plugins?: Array<string | [string, ...unknown[]]> },
-    ) {
-      const plugins = (parserOpts.plugins ??= []);
-
-      const hasLegacyDecorators = plugins.some(
-        (plugin: string | [string, ...unknown[]]) => {
-          if (plugin === 'decorators-legacy') {
-            return true;
-          }
-          return Array.isArray(plugin) && plugin[0] === 'decorators';
-        },
-      );
-
-      if (!hasLegacyDecorators) {
-        plugins.push('decorators-legacy');
-      }
+    manipulateOptions(_opts, parserOpts) {
+      parserOpts.plugins.push('decorators-legacy');
     },
 
     pre(this: State, file) {

@@ -61,6 +61,7 @@
     "@embroider/shared-internals": "^2.5.1",
     "@swc-node/register": "^1.6.8",
     "@types/babel__core": "^7.20.4",
+    "@types/convert-source-map": "^2.0.3",
     "@types/node": "^20.9.1",
     "@types/qunit": "^2.19.8",
     "prettier": "^3.3.3",

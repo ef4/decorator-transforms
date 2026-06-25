@@ -8,7 +8,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
-    "skipLibCheck": true,
     "noEmit": true,
     "sourceMap": true
   }
