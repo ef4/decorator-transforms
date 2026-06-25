@@ -24,7 +24,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -32,9 +32,17 @@ jobs:
         run: pnpm run lint
 
   test:
-    name: "Test"
+    name: "Test (Babel ${{ matrix.babel }})"
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - babel: "7"
+            override: "@babel/core@^7.29.0 @babel/preset-env@^7 @babel/plugin-proposal-decorators@^7 @babel/plugin-transform-class-properties@^7 @babel/plugin-transform-private-methods@^7"
+          - babel: "8"
+            override: "@babel/core@^8 @babel/preset-env@^8 @babel/plugin-proposal-decorators@^8 @babel/plugin-transform-class-properties@^8 @babel/plugin-transform-private-methods@^8"
 
     steps:
       - uses: actions/checkout@v4
@@ -44,9 +52,11 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+      - name: Override Babel Version For Matrix
+        run: pnpm add -D ${{ matrix.override }}
       - name: Run Tests
         run: pnpm run test

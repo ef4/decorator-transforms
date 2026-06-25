@@ -47,18 +47,21 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@babel/plugin-syntax-decorators": "^7.23.3",
     "babel-import-util": "^3.0.0"
   },
+  "peerDependencies": {
+    "@babel/core": "^7.23.0 || ^8.0.0"
+  },
   "devDependencies": {
-    "@babel/core": "^7.23.3",
-    "@babel/plugin-proposal-decorators": "^7.23.3",
-    "@babel/plugin-transform-class-properties": "^7.23.3",
-    "@babel/plugin-transform-private-methods": "^7.23.3",
-    "@babel/preset-env": "^7.24.4",
+    "@babel/core": "^8.0.1",
+    "@babel/plugin-proposal-decorators": "^8.0.2",
+    "@babel/plugin-transform-class-properties": "^8.0.1",
+    "@babel/plugin-transform-private-methods": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
     "@embroider/shared-internals": "^2.5.1",
     "@swc-node/register": "^1.6.8",
     "@types/babel__core": "^7.20.4",
+    "@types/convert-source-map": "^2.0.3",
     "@types/node": "^20.9.1",
     "@types/qunit": "^2.19.8",
     "prettier": "^3.3.3",

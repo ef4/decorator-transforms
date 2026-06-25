@@ -1,4 +1,5 @@
-import { transform, TransformOptions, parseSync, traverse } from '@babel/core';
+import { parseSync, transformSync, traverse } from '@babel/core';
+import type { TransformOptions } from '@babel/core';
 
 // @ts-expect-error no upstream types
 import legacyDecorators from '@babel/plugin-proposal-decorators';
@@ -27,7 +28,7 @@ export function builder(
   filename = 'example.js',
 ): Builder {
   function transformSrc(src: string) {
-    return transform(src, { plugins: exprPlugins, presets })!.code!;
+    return transformSync(src, { plugins: exprPlugins, presets })!.code!;
   }
 
   function expression(src: string, scope: Record<string, any>) {
@@ -41,7 +42,7 @@ export function builder(
   }
 
   async function module(src: string, deps: Record<string, any>) {
-    let transformedSrc = transform(src, {
+    let transformedSrc = transformSync(src, {
       plugins: modulePlugins ?? exprPlugins,
       presets,
       filename,
@@ -82,7 +83,7 @@ export interface Builder {
 }
 
 export const oldBuild: Builder = builder([
-  [legacyDecorators, { legacy: true }],
+  [legacyDecorators, { version: 'legacy' }],
   classProperties,
   classPrivateMethods,
 ]);
@@ -101,7 +102,7 @@ export const compatNewBuild: Builder = (() => {
   const targets = 'Safari 12';
 
   function transformSrc(src: string) {
-    return transform(src, {
+    return transformSync(src, {
       plugins: [[ourDecorators, { runtime: 'globals', runEarly: true }]],
       presets: [[presetEnv, { targets }]],
     })!.code!;
@@ -118,7 +119,7 @@ export const compatNewBuild: Builder = (() => {
   }
 
   async function module(src: string, deps: Record<string, any>) {
-    let transformedSrc = transform(src, {
+    let transformedSrc = transformSync(src, {
       plugins: [
         [
           ourDecorators,
@@ -128,7 +129,7 @@ export const compatNewBuild: Builder = (() => {
           },
         ],
       ],
-      presets: [[presetEnv, { targets }]],
+      presets: [[presetEnv, { targets, modules: 'commonjs' }]],
     })!.code!;
 
     let exports = {};
